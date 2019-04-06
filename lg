@@ -1,0 +1,137 @@
+#!/bin/bash
+
+export LG_DIR=$(dirname "$(echo "$0" | sed -e '')")
+
+# load rcfile
+rcfile="$LG_DIR/lgrc"
+[ -r "${rcfile}" ] && source "${rcfile}"
+export lg_custom_rcfile="${HOME}/.lgrc"
+[ -r "${lg_custom_rcfile}" ] && source "${lg_custom_rcfile}"
+
+logo(){
+    echo '
+   _          
+  //  __  
+_(/__(_/_ 
+     _/_      
+    (/        
+    '
+}
+
+logo1(){
+    echo '
+   _      
+  //      
+ // _, 
+(/_(_)_
+    /|    
+   (/     
+    '
+}
+
+logo2(){
+    echo '
+ _        ______ 
+| |      | | ____ 
+| |   _  | |  | | 
+|_|__|_| |_|__|_|                    
+    '
+}
+
+fmt (){
+    echo -e $1 | awk -F'\t' '{
+        if (length($1) < 15) {
+            printf "%-15s%s\n",$1,$2
+        } else {
+            print $1;
+            printf "%-15s%s\n", "", $2
+        }
+    }'
+}
+
+fmt_title (){
+    keyword_length=`echo "$1" |wc -c`
+    let "prefix_length = (30-keyword_length) / 2"
+    for i in `seq 0 ${prefix_length}` ;do
+	    echo -n '-'
+    done
+    echo -n " $1 "
+    let "suffix_length = keyword_length % 2 != 0 ? prefix_length+1: prefix_length"
+    for i in `seq 0 $suffix_length` ;do
+	    echo -n '-'
+    done
+    echo ''
+}
+
+find_commands(){
+    for folder in `ls -l $1 | grep ^d | awk '{print $9}'` ;do
+        tools_dir="$1/${folder}/tools"
+        if [ ! -d ${tools_dir} ]; then
+            continue;
+        fi
+        cmds=`ls -l ${tools_dir} | grep -v '^d' | awk '{print $9}'`
+        if [ "${cmds}" = "" ]; then
+            continue;
+        fi
+
+        fmt_title ${folder} 
+        for cmd in ${cmds} ;do
+            desc=`grep '^###' ${tools_dir}/${cmd} | cut -c 4-`
+            if [ "${desc}" != ""  ]; then
+                fmt "${cmd}\t:$desc"
+                echo "${cmd}" >> $HOME/.lg/cmds.cache
+            fi
+        done
+        echo ''
+    done
+
+}
+
+list() {
+    rm -f $HOME/.lg/cmds.cache 2>/dev/null
+    mkdir $HOME/.lg 2>/dev/null
+    echo 'Available commands:'
+    find_commands ${LG_DIR}
+    find_commands ${LG_DIR}/custom
+    exit 0;
+}
+
+uninstall() {
+    echo -n "Uninstall lg,(y)es or (n)o?"
+    read choice < /dev/tty
+    if [ "${choice}" = "y" ] && [ "${LG_DIR}" != "/" ];then
+	    cd ${LG_DIR} && make uninstall && rm -rf ${LG_DIR} && echo "lg uninstall finished. Bye~"
+    fi
+    exit 0
+}
+
+if [ $# = 0 ];then
+    logo
+    fmt 'Usage '
+    fmt " lg list\t: show all commands \nlg command\t: execute a command\nlg update\t: update lg\nlg uninstall\t: uninstall lg"
+    exit
+fi
+
+if [ "$1" = "list" ];then 
+    list "$@"
+fi
+
+if [ "$1" = "uninstall" ]; then
+    uninstall "$@"
+fi
+
+tools_dir=${LG_DIR}/*/tools/
+custom_tools_dir=${LG_DIR}/custom/*/tools/
+command_file=$1;shift
+command=`find ${tools_dir} -maxdepth 1 -name ${command_file} `
+
+if [ ! -f "${command}" ]; then
+    command=`find ${custom_tools_dir} -maxdepth 1 -name ${command_file} `
+    if [ ! -f "${command}" ]; then
+	echo "${command_file} command not found!"
+	exit 1;
+    fi
+fi
+
+exec "${command}" "$@"
+
