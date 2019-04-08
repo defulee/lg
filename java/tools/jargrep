@@ -1,0 +1,29 @@
+#!/bin/bash
+### grep text in jars
+
+if [ $# -lt 2 ];then
+    echo 'Usage : lg jargrep text <path or filename>'
+    exit 1;
+fi
+
+look_for=$1
+while true; do
+    folder=$2
+    if [ "${folder}" = "" ];then
+	    break;
+    fi
+    echo "finding '${look_for}' in ${folder} ..."
+    if [ -d "${folder}" ]; then
+        for jar in `find $2 -name "*jar"`
+        do
+            unzip -p ${jar} | grep "${look_for}" > /dev/null
+            if [ $? = 0 ]; then
+                echo "==> Found \"${look_for}\" in ${jar}"
+            fi
+        done
+    fi
+    if [ -f "${folder}" ]; then
+	    zipgrep "${look_for}" "${folder}"
+    fi
+    shift;
+done;

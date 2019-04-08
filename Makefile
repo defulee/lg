@@ -10,7 +10,7 @@ install:
 	@mkdir -p $(target_loc)
 	@echo '#!/bin/bash' > $(target_app)
 	@echo '##$(shell pwd)' >> $(target_app)
-	@echo 'exec "$(shell pwd)/lgo" "$$@"' >> $(target_app)
+	@echo 'exec "$(shell pwd)/lg" "$$@"' >> $(target_app)
 	@chmod 755 ${target_app}
 	@echo 'install finished! type "lg" to show usages.'
 uninstall:

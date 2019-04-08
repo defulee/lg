@@ -1,0 +1,14 @@
+#!/bin/bash
+### update lg
+
+echo "update lg ..."
+cd ${LG_DIR} && git pull
+for folder in `ls -l ${LG_DIR}/custom | grep ^d | awk '{print $9}'` ;do
+    if [ ! -d ${LG_DIR}/custom/${folder}/tools ]; then
+    continue;
+    fi
+    echo "update lg/custom/${folder} ..."
+    cd ${LG_DIR}/custom/${folder} && git pull | grep 'file changed' &> /dev/null && wtool configure "."
+done
+
+echo "update finished!"
