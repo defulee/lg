@@ -1,0 +1,152 @@
+#!/bin/bash
+### Find out the highest cpu consumed threads of java, and print the stack of these threads.
+
+#
+# @Usage
+#   $ lg trace_java_threads
+#
+
+readonly cmd=`basename $0`
+readonly -a full_cmd=("$0" "$@")
+
+usage() {
+    cat <<EOF
+Usage: ${cmd} [OPTION]...
+Find out the highest cpu consumed threads of java, and print the stack of these threads.
+Example: ${cmd} -p 1234 -c 10
+
+Options:
+    -p      pid, find out the highest cpu consumed threads from the specifed java process,
+    -c      count, set the thread count to show, default is 5
+    -h      help, display this help and exit
+EOF
+    exit $1
+}
+
+while getopts "c:p:h" opt; do
+    case "$opt" in
+    c)
+        count="$OPTARG"
+        ;;
+    p)
+        pid="$OPTARG"
+        ;;
+    h)
+        usage
+        ;;
+    \?)
+      echo "Invalid option: -$OPTARG" 
+        ;;
+    esac
+done
+count=${count:-5}
+
+error() {
+    [ -c /dev/stdout ] && {
+        # if stdout is console, turn on color output.
+        echo -ne "\033[1;31m"
+        echo -n "$@"
+        echo -e "\033[0m"
+    } || echo "$@"
+}
+
+warn() {
+    [ -c /dev/stdout ] && {
+        # if stdout is console, turn on color output.
+        echo -ne "\033[1;33m"
+        echo -n "$@"
+        echo -e "\033[0m"
+    } || echo "$@"
+}
+
+step() {
+    [ -c /dev/stdout ] && {
+        # if stdout is console, turn on color output.
+        echo -ne "\033[1;36m"
+        echo -n "$@"
+        echo -e "\033[0m"
+    } || echo "$@"
+}
+
+# Check pid 
+[ -z "$pid" ] && {
+    error "Error: pid parameter is not setup"
+    usage 1
+}
+
+# Check the existence of jstack command!
+if ! command -v jstack &> /dev/null; then
+    [ -z "$JAVA_HOME" ] && {
+        error "Error: JAVA_HOME is not setup"
+        exit 1
+    }
+    ! [ -f "$JAVA_HOME/bin/jstack" ] && {
+        error "Error: $JAVA_HOME/bin/jstack does not exists!"
+        exit 1
+    }
+    ! [ -x "$JAVA_HOME/bin/jstack" ] && {
+        redEcho "Error: $JAVA_HOME/bin/jstack is not executalbe!"
+        exit 1
+    }
+    export PATH="$JAVA_HOME/bin:$PATH"
+fi
+
+readonly uuid=`date +%s`_${RANDOM}_$$
+jstack_log=/tmp/${uuid}_${pid}
+
+cleanupWhenExit() {
+    rm /tmp/${uuid}_* &> /dev/null
+}
+trap "cleanupWhenExit" EXIT
+
+jstack_process() {
+    local pid=${1}
+    local tid=${2}
+    local tid_hex=${3}
+    local user=${4}
+    local pcpu=${5}
+
+    [ ! -f "${jstack_log}" ] && {
+        # check user valid
+        if [ "${user}" != "${USER}" ] && [ $UID != 0 ]; then
+            error "Fail to jstack pcpu(${pcpu}%) thread(${tid}/${tid_hex}) stack of java process(${pid}) under user(${user})."
+            error "User of java process($user) is not current user($USER), need sudo to run again:"
+            warn "    sudo ${full_cmd[@]}"
+            exit 1
+        fi
+
+        # jstack pid to log
+        if [ "${user}" == "${USER}" ]; then
+            jstack ${pid} > ${jstack_log}
+        else
+            sudo -u ${user} jstack ${pid} > ${jstack_log}
+        fi
+    }
+    
+    [ ! -f "${jstack_log}" ] && {
+        error jstack ${pid} failed!
+        exit 1
+    }
+}
+
+print_thread_stack() {
+    echo "print_thread_stack $@"
+    local line
+    while IFS=" " read -a line ; do
+        local pid=${line[0]}
+        local tid=${line[1]}
+        local tid_hex="0x`printf %x ${tid}`"
+        local user=${line[2]}
+        local pcpu=${line[4]}
+
+        jstack_process ${pid} ${tid} ${tid_hex} ${user} $pcpu
+
+        step "pcpu(${pcpu}%) thread(${tid}/${tid_hex}) stack of java process(${pid}) under user(${user}):"
+        sed "/nid=${tid_hex} /,/^$/p" -n ${jstack_log}
+    done
+}
+
+ps -Leo pid,lwp,user,command,%cpu --no-headers | \
+awk -v "pid=${pid}" '$1==pid,$4=="java"{print $0}' | \
+sort -k5 -r -n | head -n "${count}" | \
+print_thread_stack
