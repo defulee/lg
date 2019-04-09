@@ -8,9 +8,6 @@ rcfile="$LG_DIR/lgrc"
 export lg_custom_rcfile="${HOME}/.lgrc"
 [ -r "${lg_custom_rcfile}" ] && source "${lg_custom_rcfile}"
 
-# source lg-complete
-source '$LG_DIR/lg-complete'
-
 logo(){
     echo '
    _          

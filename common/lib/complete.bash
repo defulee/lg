@@ -1,6 +1,6 @@
 #!/bin/bash
 ### lg bash complete
-function lg_sh_complete {
+function lg_bash_complete {
 	local prev cur opts
 	COMPREPLY=()
 	cur="${2}"
@@ -8,5 +8,5 @@ function lg_sh_complete {
 	opts=$(cat $HOME/.lg/cmds.cache | xargs echo)
     COMPREPLY=( $( compgen -W "$opts" -- $cur ) )
 }
-export -f lg_sh_complete
-complete -F lg_sh_completes -A file lg
+export -f lg_bash_complete
+complete -F lg_bash_complete -A file lg
