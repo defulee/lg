@@ -1,4 +1,5 @@
  #!/bin/bash
+
  ### start btrace debugger
 
  base_dir=$(dirname "$(echo "$0" | sed -e '')")
@@ -6,16 +7,6 @@
      echo "Usage : wtool btrace btrace [-p <port>] [-cp <classpath>] <pid> <btrace-script> [<args>]"
      echo "More details about btrace please read doc: $base_dir/btrace.lib/README.md"
      echo "Site: https://github.com/btraceio/btrace/wiki"
-     exit 1;
- fi
- if [ ! "$JAVA_HOME" = "" ] ;then
-    java_home=$JAVA_HOME
- fi
- if [ $# -gt 1 ];then
-     java_home=$2;
- fi
- if [ ! -f "$java_home/lib/tools.jar" ] && [ "$(uname)" != "Darwin"  ];then
-     echo "$java_home/lib/tools.jar not found!"
      exit 1;
  fi
 
