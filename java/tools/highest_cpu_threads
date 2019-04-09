@@ -91,24 +91,17 @@ cleanup() {
 trap "cleanup" EXIT
 
 jstack_process() {
-    local pid=${1}
-    local tid=${2}
-    local tid_hex=${3}
-    local user=${4}
-    local pcpu=${5}
-
     [ ! -f "${jstack_log}" ] && {
         jstack ${pid} > ${jstack_log}
     }
     
     [ ! -f "${jstack_log}" ] && {
-        error "Fail to stack of java process(${pid}) under user(${user})."
+        error "Fail to stack of java process(${pid}) under user(${USER})."
         exit 1
     }
 }
 
 print_thread_stack() {
-    echo "print_thread_stack $@"
     local line
     while IFS=" " read -a line ; do
         local pid=${line[0]}
@@ -117,7 +110,7 @@ print_thread_stack() {
         local user=${line[2]}
         local pcpu=${line[4]}
 
-        jstack_process ${pid} ${tid} ${tid_hex} ${user} $pcpu
+        jstack_process
 
         step "pcpu(${pcpu}%) thread(${tid}/${tid_hex}) stack of java process(${pid}) under user(${user}):"
         sed "/nid=${tid_hex} /,/^$/p" -n ${jstack_log}
@@ -125,6 +118,6 @@ print_thread_stack() {
 }
 
 ps -Leo pid,lwp,user,command,%cpu --no-headers | \
-awk -v "pid=${pid}" '$1==pid,$4=="java"{print $0}' | \
+awk -v "pid=${pid}" 'if($1==pid && $4=="java"){print $0}' | \
 sort -k5 -r -n | head -n "${count}" | \
 print_thread_stack
