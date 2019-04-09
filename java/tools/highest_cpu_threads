@@ -118,6 +118,6 @@ print_thread_stack() {
 }
 
 ps -Leo pid,lwp,user,command,%cpu --no-headers | \
-awk -v "pid=${pid}" 'if($1==pid && $4=="java"){print $0}' | \
-sort -k5 -r -n | head -n "${count}" | \
+awk -v "pid=${pid}" '{if($1==pid)print $0}' | \
+sort -k5 -nr | head -n "${count}" | \
 print_thread_stack
