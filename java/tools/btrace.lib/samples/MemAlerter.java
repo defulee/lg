@@ -36,7 +36,7 @@ import java.lang.management.MemoryUsage;
  * script that dumps heap by dumpHeap on crossing
  * the threshold instead of just printing a message.
  * Note that the name of the old gen is dependent on
- * GC algorithm. With ParallelGC, the name is "PS Old Gen".
+ * GC aldforithm. With ParallelGC, the name is "PS Old Gen".
  */
 @BTrace 
 public class MemAlerter {

@@ -2,7 +2,7 @@
 ### grep text in jars
 
 if [ $# -lt 2 ];then
-    echo 'Usage : lg jargrep text <path or filename>'
+    echo 'Usage : ldf jargrep text <path or filename>'
     exit 1;
 fi
 

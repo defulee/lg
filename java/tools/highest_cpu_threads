@@ -3,7 +3,7 @@
 
 #
 # @Usage
-#   $ lg trace_java_threads
+#   $ ldf trace_java_threads
 #
 
 readonly cmd=`basename $0`

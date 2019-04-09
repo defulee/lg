@@ -2,7 +2,7 @@
 ### number conversion
 
 if [ $# = 0 ]; then
-    echo "Usage :lg number [0x]number[b]"
+    echo "Usage :ldf number [0x]number[b]"
     echo "number could be hexadecimal(0x),binary(b),or decimal(default)"
     exit 0;
 fi
