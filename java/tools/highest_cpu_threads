@@ -50,15 +50,6 @@ error() {
     } || echo "$@"
 }
 
-warn() {
-    [ -c /dev/stdout ] && {
-        # if stdout is console, turn on color output.
-        echo -ne "\033[1;33m"
-        echo -n "$@"
-        echo -e "\033[0m"
-    } || echo "$@"
-}
-
 step() {
     [ -c /dev/stdout ] && {
         # if stdout is console, turn on color output.
@@ -85,7 +76,7 @@ if ! command -v jstack &> /dev/null; then
         exit 1
     }
     ! [ -x "$JAVA_HOME/bin/jstack" ] && {
-        redEcho "Error: $JAVA_HOME/bin/jstack is not executalbe!"
+        error "Error: $JAVA_HOME/bin/jstack is not executalbe!"
         exit 1
     }
     export PATH="$JAVA_HOME/bin:$PATH"
@@ -94,10 +85,10 @@ fi
 readonly uuid=`date +%s`_${RANDOM}_$$
 jstack_log=/tmp/${uuid}_${pid}
 
-cleanupWhenExit() {
+cleanup() {
     rm /tmp/${uuid}_* &> /dev/null
 }
-trap "cleanupWhenExit" EXIT
+trap "cleanup" EXIT
 
 jstack_process() {
     local pid=${1}
@@ -107,24 +98,11 @@ jstack_process() {
     local pcpu=${5}
 
     [ ! -f "${jstack_log}" ] && {
-        # check user valid
-        if [ "${user}" != "${USER}" ] && [ $UID != 0 ]; then
-            error "Fail to jstack pcpu(${pcpu}%) thread(${tid}/${tid_hex}) stack of java process(${pid}) under user(${user})."
-            error "User of java process($user) is not current user($USER), need sudo to run again:"
-            warn "    sudo ${full_cmd[@]}"
-            exit 1
-        fi
-
-        # jstack pid to log
-        if [ "${user}" == "${USER}" ]; then
-            jstack ${pid} > ${jstack_log}
-        else
-            sudo -u ${user} jstack ${pid} > ${jstack_log}
-        fi
+        jstack ${pid} > ${jstack_log}
     }
     
     [ ! -f "${jstack_log}" ] && {
-        error jstack ${pid} failed!
+        error "Fail to stack of java process(${pid}) under user(${user})."
         exit 1
     }
 }
