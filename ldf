@@ -21,11 +21,11 @@ _(/__(_/(__//_
 
 fmt (){
     echo -e $1 | awk -F'\t' '{
-        if (length($1) < 15) {
-            printf "%-15s%s\n",$1,$2
+        if (length($1) < 20) {
+            printf "%-20s%s\n",$1,$2
         } else {
             print $1;
-            printf "%-15s%s\n", "", $2
+            printf "%-20s%s\n", "", $2
         }
     }'
 }
