@@ -1,0 +1,34 @@
+#!/bin/bash
+
+fmt_cmd (){
+    echo -e $1 | awk -F'\t' '{
+        if (length($1) < 20) {
+            printf "%-20s%s\n",$1,$2
+        } else {
+            print $1;
+            printf "%-20s%s\n", "", $2
+        }
+    }'
+}
+
+fmt_title (){
+    keyword_length=`echo "$1" |wc -c`
+    let "prefix_length = (30-keyword_length) / 2"
+    for i in `seq 0 ${prefix_length}` ;do
+	    echo -n '-'
+    done
+    echo -n " $1 "
+    let "suffix_length = keyword_length % 2 != 0 ? prefix_length+1: prefix_length"
+    for i in `seq 0 $suffix_length` ;do
+	    echo -n '-'
+    done
+    echo ''
+}
+
+function fmt_bold() {
+    echo -e "$(tput bold)$*$(tput sgr0)"
+}
+
+function fmt_ul() {
+    echo -e "$(tput smul)$*$(tput rmul)"
+}

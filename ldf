@@ -3,48 +3,36 @@
 export LDF_DIR=$(dirname "$(echo "$0" | sed -e '')")
 
 # load rcfile
-rcfile="$LDF_DIR/ldfrc"
+rcfile="${LDF_DIR}/ldfrc"
 [ -r "${rcfile}" ] && source "${rcfile}"
 export ldf_custom_rcfile="${HOME}/.ldfrc"
 [ -r "${ldf_custom_rcfile}" ] && source "${ldf_custom_rcfile}"
 
-logo(){
+# load common lib functions
+common_lib="${LDF_DIR}/common/lib/common-functions"
+[ -r "${common_lib}" ] && source ${common_lib}
+
+logo() {
     echo '
-   _          
-  //  __/   /)
-_(/__(_/(__//_
-         _/   
-         /)   
-         `           
+       _          
+      //  __/   /)
+    _(/__(_/(__//_
+            _/   
+            /)   
+            `           
     '
 }
-
-fmt (){
-    echo -e $1 | awk -F'\t' '{
-        if (length($1) < 20) {
-            printf "%-20s%s\n",$1,$2
-        } else {
-            print $1;
-            printf "%-20s%s\n", "", $2
-        }
-    }'
+usage() {
+cat << EOF
+$(fmt_bold USAGE)
+ldf list:       show all commands 
+ldf command:    execute a command(such as color、stats)
+ldf update:     update ldf
+ldf uninstall:  uninstall ldf"
+EOF
 }
 
-fmt_title (){
-    keyword_length=`echo "$1" |wc -c`
-    let "prefix_length = (30-keyword_length) / 2"
-    for i in `seq 0 ${prefix_length}` ;do
-	    echo -n '-'
-    done
-    echo -n " $1 "
-    let "suffix_length = keyword_length % 2 != 0 ? prefix_length+1: prefix_length"
-    for i in `seq 0 $suffix_length` ;do
-	    echo -n '-'
-    done
-    echo ''
-}
-
-find_commands(){
+find_commands() {
     for folder in `ls -l $1 | grep ^d | awk '{print $9}'` ;do
         tools_dir="$1/${folder}/tools"
         if [ ! -d ${tools_dir} ]; then
@@ -59,7 +47,7 @@ find_commands(){
         for cmd in ${cmds} ;do
             desc=`grep '^###' ${tools_dir}/${cmd} | cut -c 4-`
             if [ "${desc}" != ""  ]; then
-                fmt "${cmd}\t:$desc"
+                fmt_cmd "${cmd}\t:$desc"
                 echo "${cmd}" >> $HOME/.ldf/cmds.cache
             fi
         done
@@ -88,8 +76,8 @@ uninstall() {
 
 if [ $# = 0 ];then
     logo
-    fmt 'Usage '
-    fmt " ldf list\t: show all commands \nldf command\t: execute a command\nldf update\t: update ldf\nldf uninstall\t: uninstall ldf"
+    fmt_bold 'Usage '
+    fmt_cmd " ldf list\t: show all commands \nldf command\t: execute a command\nldf update\t: update ldf\nldf uninstall\t: uninstall ldf"
     exit
 fi
 

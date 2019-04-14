@@ -1,0 +1,133 @@
+#!/bin/bash
+
+### collect statistics of data from a file or stdin
+
+# load common lib functions
+current_dir=$(dirname "$(echo "$0" | sed -e '')")
+source ${current_dir}/../lib/common-functions
+
+function usage() {
+cat << EOF
+$(fmt_bold USAGE)
+$(basename $0) [options] [file]       stats data
+
+$(fmt_bold SUMMARY)
+Collect statistics for data of the files or data from the std input. It will collect 
+
+1. Distributions (max value of min 50%, 75%, 90%, 95%, 99%, 99.9% and 99.99% elements)
+2. Statistics (min, max, average, sum, lines)
+
+eg. 
+    50%      0.564464
+    75%      0.836208
+    90%      1.19593
+    95%      1.49691
+    99%      2.4372
+    99.9%    4.3235
+    99.99%   6.65399
+    min      0.00010091
+    max      89.2543
+    average  0.672871
+    stddev   0.670639
+    lines    35910
+    sum      24162.8
+
+$(fmt_bold OPTIONS)
+    [file]          the file from which to statistics are collected.
+                    if the file is not specified, it will collect statistics for data from $(fmt_ul stdin).
+
+$(fmt_bold NOTE)
+1. The data must be one number each line.
+2. The file supports both plain text file and $(fmt_bold gzipped) file (with $(fmt_bold .gz) suffix).
+EOF
+}
+
+# 读取文件内容，兼容.gz文件格式
+function scat() {
+    if [ "${1##*.}"x = "gz"x ];then
+        zcat "${1}" 
+    else
+        cat "${1}"
+    fi
+}
+
+function stats() {
+    awk -v lines_count="$1" '
+        function line_index(p) {
+            return 1 + int((lines - 1) * p); 
+        } 
+
+        BEGIN {
+            p50=line_index(0.5); 
+            p75=line_index(0.75);
+            p90=line_index(0.9); 
+            p95=line_index(0.95);
+            p99=line_index(0.99);
+            p999=line_index(0.999);
+            p9999=line_index(0.9999);
+            sum=0;
+            count=0;
+        }
+        
+            NR == 1 { min=$0; max=$0; }
+            NR == p50 { print "50%", $0 }
+            NR == p75 { print "75%", $0 }
+            NR == p90 { print "90%", $0 }
+            NR == p95 { print "95%", $0 }
+            NR == p99 { print "99%", $0 }
+            NR == p999 { print "99.9%", $0 }
+            NR == p9999 { print "99.99%", $0 }
+
+            min > $0 { min = $0; }
+            max < $0 { max = $0; }
+        {
+            sum+=$0;
+            count++;
+        }
+        END {
+            if (count > 0) {
+                print "min", min;
+                print "max", max;
+                print "average", sum/count;
+                print "sum", sum;
+                print "lines", count;
+            }
+        }
+    '
+}
+
+function stats_from_stream() {
+    temp_file=$(mktemp)
+    sort -n > "${temp_file}"
+
+    lines="$(wc -l "${temp_file}" | awk '{print $1}')"
+    stats "${lines}" < "${temp_file}" 
+
+    rm -f "${temp_file}"
+}
+
+
+while [ $# -gt 0 ]; do
+    flag="$1"
+    shift
+    case "$flag" in
+        -h|--help)
+            usage
+            exit 0
+            ;;
+        *)
+            file="$flag"
+            ;;
+    esac
+done
+
+if [ -n "${file}" ]; then
+    if [ -r "${file}" ]; then
+        scat "${file}" | stats_from_stream
+    else
+        echo "${file} is not readable"
+        exit 1
+    fi
+else
+    stats_from_stream
+fi
