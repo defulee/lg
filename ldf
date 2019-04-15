@@ -28,7 +28,7 @@ $(fmt_bold USAGE)
 ldf list:       show all commands 
 ldf command:    execute a command(such as color、stats)
 ldf update:     update ldf
-ldf uninstall:  uninstall ldf"
+ldf uninstall:  uninstall ldf
 EOF
 }
 
@@ -76,8 +76,7 @@ uninstall() {
 
 if [ $# = 0 ];then
     logo
-    fmt_bold 'Usage '
-    fmt_cmd " ldf list\t: show all commands \nldf command\t: execute a command\nldf update\t: update ldf\nldf uninstall\t: uninstall ldf"
+    usage
     exit
 fi
 

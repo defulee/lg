@@ -132,9 +132,6 @@ function stats_from_stream() {
     rm -f "${temp_file}"
 }
 
-################################################################################
-# MAIN
-
 while [ $# -gt 0 ]; do
     flag="$1"
     shift
