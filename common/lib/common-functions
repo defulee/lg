@@ -32,3 +32,42 @@ function fmt_bold() {
 function fmt_ul() {
     echo -e "$(tput smul)$*$(tput rmul)"
 }
+
+################################################################################
+# DESC: Prints a formatted message of the selected option by the user to stdout
+# ARGS: $* (required): String to print (usually provided by other functions)
+# OUTS: None
+################################################################################
+function fmt_error() {
+    local bold=$(tput bold)
+    local red=$(tput setaf 1)
+    local reset=$(tput sgr0)
+    local msg=${*:-"${reset}Error: No message passed"}
+    
+    echo -e "${bold}${red}${msg}${reset}\n"
+}
+
+################################################################################
+# DESC: Checks to make sure the user has the appropriate utilities installed
+# ARGS: None
+# OUTS: None
+################################################################################
+function check_utils() {
+    local msg="not found. Please make sure this is installed and in PATH."
+
+    command -v awk >/dev/null 2>&1 || { echo >&2 "awk ${msg}"; exit 1; }
+    command -v basename >/dev/null 2>&1 || { echo >&2 "basename ${msg}"; exit 1; }
+    command -v cat >/dev/null 2>&1 || { echo >&2 "cat ${msg}"; exit 1; }
+    command -v column >/dev/null 2>&1 || { echo >&2 "column ${msg}"; exit 1; }
+    command -v echo >/dev/null 2>&1 || { echo >&2 "echo ${msg}"; exit 1; }
+    # command -v git >/dev/null 2>&1 || { echo >&2 "git ${msg}"; exit 1; }
+    command -v grep >/dev/null 2>&1 || { echo >&2 "grep ${msg}"; exit 1; }
+    command -v head >/dev/null 2>&1 || { echo >&2 "head ${msg}"; exit 1; }
+    command -v seq >/dev/null 2>&1 || { echo >&2 "seq ${msg}"; exit 1; }
+    command -v sort >/dev/null 2>&1 || { echo >&2 "sort ${msg}"; exit 1; }
+    command -v tput >/dev/null 2>&1 || { echo >&2 "tput ${msg}"; exit 1; }
+    command -v tr >/dev/null 2>&1 || { echo >&2 "tr ${msg}"; exit 1; }
+    command -v uniq >/dev/null 2>&1 || { echo >&2 "uniq ${msg}"; exit 1; }
+    command -v wc >/dev/null 2>&1 || { echo >&2 "wc ${msg}"; exit 1; }
+}
+
