@@ -71,3 +71,22 @@ function check_utils() {
     command -v wc >/dev/null 2>&1 || { echo >&2 "wc ${msg}"; exit 1; }
 }
 
+# 绘制直方图， 输入格式为：多行，每行格式为：keyword count
+function histogram() {
+    awk '{ 
+        count[$1] = $2 
+        total += $2 
+    } 
+    END{ 
+        for (month in count) {
+            s="|";
+            if (total > 0) {
+                percent = ((count[month] / total) * 100) / 1.25;
+                for (i = 1; i <= percent; ++i) {
+                    s=s"█"
+                }
+                printf( "\t%s\t%-0s\t%s\n", month, count[month], s );
+            }
+        }
+    }'
+}

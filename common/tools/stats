@@ -115,7 +115,7 @@ function stats() {
                         for (i = 1; i <= percent; ++i) {
                             s=s"█"
                         }
-                        printf( "<=p%s\t%-0s %s\n", interval, s, pi[interval]) | "sort";
+                        printf( "<=p%s\t%s %s\n", interval, pi[interval], s) | "sort";
                     }
                 }
             }
