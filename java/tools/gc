@@ -1,0 +1,54 @@
+#!/bin/bash
+
+### GC相关:垃圾收集统计（包含原因）、显示堆中各代的空间、垃圾收集统计、打印perm区内存情况
+
+# jstat -gccause pid [arg];垃圾收集统计（包含原因）;0,3;可以指定间隔时间及执行次数，默认1秒, 10次;1000 10
+# jstat -gccapacity pid [arg];显示堆中各代的空间;0,3;可以指定间隔时间及执行次数，默认1秒，5次;1000 5
+# jstat -gcutil pid [arg];垃圾收集统计。;0,3;可以指定间隔时间及执行次数，默认1秒, 10次;1000 10
+# jstat -gcpermcapacity pid [arg];打印perm区内存情况*会使程序暂停响应*;0;
+# java -cp ${JAVA_HOME}/lib/tools.jar:${OPSCRIPTS_JVM_LIB} MonBuffers pid [arg] ;查看directbuffer情况;0,3;;1000 5
+
+usage() {
+    cat <<EOF
+Usage: `basename $0` [OPTION] pid [arg]
+GC相关:垃圾收集统计（包含原因）、显示堆中各代的空间、垃圾收集统计、打印perm区内存情况、查看directbuffer情况
+Example: `basename $0` -p 1234 -c 10
+
+Options:
+    -cause      ref: jstat -gccause; 垃圾收集统计（包含原因）;可以指定间隔时间及执行次数，默认1秒, 10次; 
+    -capacity   ref: jstat -gccapacity; 显示堆中各代的空间;可以指定间隔时间及执行次数，默认1秒，5次;1000 5; 
+    -util       ref: jstat -gcutil; 垃圾收集统计。可以指定间隔时间及执行次数，默认1秒, 10次;1000 10
+    -permcapacity       ref: jstat -gcpermcapacity; 打印perm区内存情况*会使程序暂停响应*;
+EOF
+}
+
+cmd=""
+while [ $# -gt 0 ]; do
+    flag="$1"
+    shift
+    case "$flag" in
+        -h|--help)
+            usage
+            exit 0
+            ;;
+        -cause)
+            cmd="jstat -gccause"
+            ;;
+        -capacity)
+            cmd="jstat -gccapacity"
+            ;;
+        -util)
+            cmd="jstat -gcutil"
+            ;;
+        -permcapacity)
+            cmd="jstat -gcpermcapacity"
+            ;;
+        *)
+            usage
+            exit 1
+            ;;
+    esac
+    break
+done
+
+${cmd} ${@}

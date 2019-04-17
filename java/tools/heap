@@ -1,0 +1,55 @@
+#!/bin/bash
+
+### 堆对象相关:dump heap到文件、打印jvm heap中top20的对象、打印jvm heap统计、输出所有类装载器在perm里产生的对象
+
+# jmap -dump:file=[arg] pid;dump heap到文件*会使程序暂停响应*;0; 默认保存到`pwd`/dump.bin,可指定其它路径;`pwd`/dump.bin
+# jmap -histo:live pid [arg] >/dev/null;触发full gc。*会使程序暂停响应*;0;
+# jmap -heap pid [arg];打印jvm heap统计*会使程序暂停响应*;0;
+# jmap -histo pid |sort -n -r -k$(([arg]+1)) |head -n 21;打印jvm heap中top20的对象。*会使程序暂停响应*;0;参数：1:按实例数量排序,2:按内存占用排序，默认为1;1
+# jmap -histo:live pid |sort -n -r -k$(([arg]+1)) |head -n 21;触发full gc后打印jvm heap中top20的对象。*会使程序暂停响应*;0;参数：1:按实例数量排序,2:按内存占用排序，默认为1;1
+# jmap -permstat pid [arg];输出所有类装载器在perm里产生的对象。;0;可以指定间隔时间及执行次数
+
+usage() {
+    cat <<EOF
+Usage: `basename $0` [OPTION] pid [arg]
+堆对象相关:dump heap到文件、打印jvm heap中top20的对象、打印jvm heap统计、输出所有类装载器在perm里产生的对象
+Example: `basename $0` -p 1234 -c 10
+
+Options:
+    -dump       
+    -histo   
+    -heap       
+    -histo_top     
+    -permstat         
+EOF
+}
+
+while [ $# -gt 0 ]; do
+    flag="$1"
+    shift
+    case "$flag" in
+        -h|--help)
+            usage
+            exit 0
+            ;;
+        -dump)
+            usage
+            ;;
+        -histo)
+            usage
+            ;;
+        -heap)
+            usage
+            ;;
+        -histo_top)
+            usage
+            ;;
+        -permstat)
+            usage
+            exit 1
+            ;;
+    esac
+    break
+done
+
+exit 0
