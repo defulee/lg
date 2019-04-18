@@ -78,15 +78,16 @@ function histogram() {
         total += $2 
     } 
     END{ 
-        for (month in count) {
+        for (k in count) {
             s="|";
             if (total > 0) {
-                percent = ((count[month] / total) * 100) / 1.25;
+                percent = ((count[k] / total) * 100) / 1.25;
                 for (i = 1; i <= percent; ++i) {
-                    s=s"█"
+                    s=s"▇"
                 }
-                printf( "\t%s\t%-0s\t%s\n", month, count[month], s );
+                printf( "\t%s\t%s\t%s %s\n", k, count[k], s, percent"%");
             }
         }
-    }'
+    }
+    '
 }

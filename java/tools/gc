@@ -1,54 +1,82 @@
 #!/bin/bash
 
-### GC相关:垃圾收集统计（包含原因）、显示堆中各代的空间、垃圾收集统计、打印perm区内存情况
-
-# jstat -gccause pid [arg];垃圾收集统计（包含原因）;0,3;可以指定间隔时间及执行次数，默认1秒, 10次;1000 10
-# jstat -gccapacity pid [arg];显示堆中各代的空间;0,3;可以指定间隔时间及执行次数，默认1秒，5次;1000 5
-# jstat -gcutil pid [arg];垃圾收集统计。;0,3;可以指定间隔时间及执行次数，默认1秒, 10次;1000 10
-# jstat -gcpermcapacity pid [arg];打印perm区内存情况*会使程序暂停响应*;0;
-# java -cp ${JAVA_HOME}/lib/tools.jar:${OPSCRIPTS_JVM_LIB} MonBuffers pid [arg] ;查看directbuffer情况;0,3;;1000 5
+### GC相关:显示堆中各代垃圾收集统计、显示堆中各代的内存统计
 
 usage() {
     cat <<EOF
-Usage: `basename $0` [OPTION] pid [arg]
-GC相关:垃圾收集统计（包含原因）、显示堆中各代的空间、垃圾收集统计、打印perm区内存情况、查看directbuffer情况
-Example: `basename $0` -p 1234 -c 10
+Usage: ldf `basename $0` [OPTION] pid [<interval> [<count>]]
+GC相关:显示堆中各代垃圾收集统计、显示堆中各代的内存统计
+Example: ldf `basename $0` -util 1234 1000 10
 
 Options:
-    -cause      ref: jstat -gccause; 垃圾收集统计（包含原因）;可以指定间隔时间及执行次数，默认1秒, 10次; 
-    -capacity   ref: jstat -gccapacity; 显示堆中各代的空间;可以指定间隔时间及执行次数，默认1秒，5次;1000 5; 
-    -util       ref: jstat -gcutil; 垃圾收集统计。可以指定间隔时间及执行次数，默认1秒, 10次;1000 10
-    -permcapacity       ref: jstat -gcpermcapacity; 打印perm区内存情况*会使程序暂停响应*;
+    -cause  ref: jstat -gccause; 垃圾收集统计（包含原因）;默认1秒, 10次;(interval=1000, count=10); 
+    -util   ref: jstat -gcutil; 垃圾收集统计。默认1秒, 10次;(interval=1000, count=10); 
+    -new    ref: jstat -gcnew; 新生代垃圾回收统计; 默认1秒, 10次;(interval=1000, count=10); 
+    -old    ref: jstat -gcold; 老年代垃圾回收统计; 默认1秒, 10次;(interval=1000, count=10); 
+    -capacity       ref: jstat -gccapacity; 显示堆中各代的空间;
+    -newcapacity    ref: jstat -gcnewcapacity; 新生代内存统计
+    -oldcapacity    ref: jstat -gcoldcapacity; 老年代内存统计
+    -permcapacity   ref: jstat -gcpermcapacity; 打印perm区内存情况*会使程序暂停响应*; 
+    -metacapacity   ref: jstat -gcmetacapacity; 元数据空间统计
 EOF
 }
 
 cmd=""
-while [ $# -gt 0 ]; do
-    flag="$1"
-    shift
+if [ $# -lt 1 ]; then
+    usage
+    exit 1
+fi
+
+flag="$1"
+case "$flag" in
+    -h|--help)
+        usage
+        exit 0
+        ;;
+    -cause)
+        cmd="jstat -gccause"
+        ;;
+    -util)
+        cmd="jstat -gcutil"
+        ;;
+    -new)
+        cmd="jstat -gcnew"
+        ;;
+    -old)
+        cmd="jstat -gcold"
+        ;;
+    -capacity)
+        cmd="jstat -gccapacity"
+        ;;
+    -newcapacity)
+        cmd="jstat -gcnewcapacity"
+        ;;
+    -oldcapacity)
+        cmd="jstat -gcoldcapacity"
+        ;;
+    -permcapacity)
+        cmd="jstat -gcpermcapacity"
+        ;;
+    -metacapacity)
+        cmd="jstat -gcmetacapacity"
+        ;;
+    *)
+        usage
+        exit 1
+        ;;
+esac
+pid=${2}
+shift;shift;
+
+arg="${@}"
+if [ $# -lt 1 ]; then
     case "$flag" in
-        -h|--help)
-            usage
-            exit 0
-            ;;
-        -cause)
-            cmd="jstat -gccause"
-            ;;
-        -capacity)
-            cmd="jstat -gccapacity"
-            ;;
-        -util)
-            cmd="jstat -gcutil"
-            ;;
-        -permcapacity)
-            cmd="jstat -gcpermcapacity"
+        -capacity|-newcapacity|-oldcapacity|-permcapacity|-metacapacity)
             ;;
         *)
-            usage
-            exit 1
+           arg="1000 10"
             ;;
     esac
-    break
-done
+fi
 
-${cmd} ${@}
+${cmd} ${pid} ${arg}
