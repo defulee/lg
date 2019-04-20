@@ -1,55 +1,80 @@
 #!/bin/bash
 
-### 堆对象相关:dump heap到文件、打印jvm heap中top20的对象、打印jvm heap统计、输出所有类装载器在perm里产生的对象
-
-# jmap -dump:file=[arg] pid;dump heap到文件*会使程序暂停响应*;0; 默认保存到`pwd`/dump.bin,可指定其它路径;`pwd`/dump.bin
-# jmap -histo:live pid [arg] >/dev/null;触发full gc。*会使程序暂停响应*;0;
-# jmap -heap pid [arg];打印jvm heap统计*会使程序暂停响应*;0;
-# jmap -histo pid |sort -n -r -k$(([arg]+1)) |head -n 21;打印jvm heap中top20的对象。*会使程序暂停响应*;0;参数：1:按实例数量排序,2:按内存占用排序，默认为1;1
-# jmap -histo:live pid |sort -n -r -k$(([arg]+1)) |head -n 21;触发full gc后打印jvm heap中top20的对象。*会使程序暂停响应*;0;参数：1:按实例数量排序,2:按内存占用排序，默认为1;1
-# jmap -permstat pid [arg];输出所有类装载器在perm里产生的对象。;0;可以指定间隔时间及执行次数
+### 堆对象相关:dump heap到文件、显示jvm heap中top20的对象、显示Java堆详细信息、显示在F-Queue队列等待Finalizer线程执行finalizer方法的对象
 
 usage() {
-    cat <<EOF
-Usage: `basename $0` [OPTION] pid [arg]
-堆对象相关:dump heap到文件、打印jvm heap中top20的对象、打印jvm heap统计、输出所有类装载器在perm里产生的对象
-Example: `basename $0` -p 1234 -c 10
+    cat << EOF
+Usage: ldf `basename $0` [OPTION] pid [arg]
+堆对象相关:dump heap到文件、显示jvm heap中top20的对象、显示Java堆详细信息、显示在F-Queue队列等待Finalizer线程执行finalizer方法的对象
+Example: ldf `basename $0` -dumplive 1234 
 
 Options:
-    -dump       
-    -histo   
-    -heap       
-    -histo_top     
-    -permstat         
+    -dump       ref:jmap -dump:format=b,file=heap.bin pid 生成堆转储快照dump文件
+    -dumplive   ref:jmap -dump:live,format=b,file=heap.bin pid 生成堆活动的对象快照dump文件              
+    -histo      ref:jmap -histo pid | sort -nr -k([arg]+1) | head -n 21;
+                    jvm heap中top20的对象;0;参数：1:按实例数量排序,2:按内存占用排序，默认为1;1
+    -histolive  ref:jmap -histo:live pid | sort -nr -k([arg]+1) | head -n 21; 
+                    jvm heap中活动的top20的对象;0;参数：1:按实例数量排序,2:按内存占用排序，默认为1;1
+    -heap       ref:jmap -heap; 显示Java堆详细信息
+    -clstats       ref:jmap -clstats; 打印类加载器信息          
+    -finalizerinfo ref:jmap -finalizerinfo; 显示在F-Queue队列等待Finalizer线程执行finalizer方法的对象       
 EOF
 }
 
-while [ $# -gt 0 ]; do
-    flag="$1"
-    shift
+if [ $# -lt 1 ]; then
+    usage
+    exit 1
+fi
+
+cmd=""
+flag="$1"
+case "$flag" in
+    -h|--help)
+        usage
+        exit 0
+        ;;
+    -dump)
+        cmd="jmap -dump:format=b,file=heap.bin"
+        ;;
+    -dumplive)
+        cmd="jmap -dump:live,format=b,file=heap.bin"
+        ;;
+    -histo)
+        cmd="jmap -histo"
+        ;;
+    -histolive)
+        cmd="jmap -histo:live"
+        ;;
+    -heap)
+        cmd="jmap -heap"
+        ;;
+    -clstats)
+        cmd="jmap -clstats"
+        ;;
+    -finalizerinfo)
+        cmd="jmap -finalizerinfo"
+        ;;
+    *)
+        usage
+        exit 1
+        ;;
+esac
+pid=${2}
+shift;shift;
+
+arg="${@}"
+if [ $# -lt 1 ]; then
     case "$flag" in
-        -h|--help)
-            usage
-            exit 0
+        -dump|-dumplive|-heap|-clstats|-finalizerinfo)
+            ${cmd} ${pid}
             ;;
-        -dump)
-            usage
+        -histo|-histolive)
+            col=${1:-2}
+            ${cmd} ${pid} | sort -nr -k ${col} | head -n 21
             ;;
-        -histo)
-            usage
-            ;;
-        -heap)
-            usage
-            ;;
-        -histo_top)
-            usage
-            ;;
-        -permstat)
+        *)
             usage
             exit 1
             ;;
     esac
-    break
-done
-
-exit 0
+fi
