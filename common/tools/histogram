@@ -1,6 +1,6 @@
 #!/bin/bash
 
-### collect statistics of data from a file or stdin
+### 统计数据出现频次，并以直方图显示
 
 # load common lib functions
 current_dir=$(dirname "$(echo "$0" | sed -e '')")
