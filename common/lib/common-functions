@@ -71,11 +71,18 @@ function check_utils() {
     command -v wc >/dev/null 2>&1 || { echo >&2 "wc ${msg}"; exit 1; }
 }
 
-# 绘制直方图， 输入格式为：多行，每行格式为：keyword count
+# 绘制直方图， 输入格式为：多行，每行格式为：keyword count 或者 count keyword
+# 参数：keyword_col，候选：1，2 默认1
 function histogram() {
-    awk '{ 
-        count[$1] = $2 
-        total += $2 
+    keyword_col=${1:-1}
+    awk -v keyword_col="${keyword_col}" '{
+        if (keyword_col==1){
+            count[$1] = $2 
+            total += $2 
+        } else {
+            count[$2] = $1 
+            total += $1
+        }
     } 
     END{ 
         for (k in count) {
@@ -90,4 +97,13 @@ function histogram() {
         }
     }
     '
+}
+
+# 读取文件内容，兼容.gz文件格式
+function scat() {
+    if [ "${1##*.}"x = "gz"x ];then
+        zcat "${1}" 
+    else
+        cat "${1}"
+    fi
 }

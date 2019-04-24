@@ -60,6 +60,42 @@ usage:  echo -e "\e[[fg] tTt \e[0m"
 ```
 
 - histogram
+> 统计数据，按照直方图显示分布
+```
+    11:17	2	|▇ 1.88235%
+	11:18	5	|▇▇▇▇ 4.70588%
+	11:19	4	|▇▇▇ 3.76471%
+	11:30	1	| 0.941176%
+	11:31	1	| 0.941176%
+	11:32	4	|▇▇▇ 3.76471%
+	11:33	1	| 0.941176%
+	11:34	2	|▇ 1.88235%
+	11:35	2	|▇ 1.88235%
+	11:36	1	| 0.941176%
+	11:01	3	|▇▇ 2.82353%
+	11:02	1	| 0.941176%
+	11:03	3	|▇▇ 2.82353%
+	11:04	3	|▇▇ 2.82353%
+	11:05	2	|▇ 1.88235%
+	11:06	5	|▇▇▇▇ 4.70588%
+	11:07	3	|▇▇ 2.82353%
+	11:08	7	|▇▇▇▇▇▇ 6.58824%
+	11:20	2	|▇ 1.88235%
+	11:21	1	| 0.941176%
+	11:22	3	|▇▇ 2.82353%
+	11:23	1	| 0.941176%
+	11:24	1	| 0.941176%
+	11:25	3	|▇▇ 2.82353%
+	11:26	4	|▇▇▇ 3.76471%
+	11:27	3	|▇▇ 2.82353%
+	11:28	3	|▇▇ 2.82353%
+	11:29	1	| 0.941176%
+	11:11	3	|▇▇ 2.82353%
+	11:13	3	|▇▇ 2.82353%
+	11:14	3	|▇▇ 2.82353%
+	11:15	2	|▇ 1.88235%
+	11:16	2	|▇ 1.88235%
+``` 
 - stats
 > collect statistics of data from a file or stdin
 ```
@@ -98,7 +134,7 @@ Histogram:
 ```
 
 - btrace
-> 见：![BTrace](https://github.com/btraceio/btrace)
+> 见：[BTrace](https://github.com/btraceio/btrace)
 
 - find_in_jars
 - jargrep
@@ -139,7 +175,7 @@ Options:
 ```
 
 - greys
-![greys](https://github.com/oldmanpushcart/greys-anatomy)
+[greys](https://github.com/oldmanpushcart/greys-anatomy)
 
 - highest_cpu_threads
 > Find out the highest cpu consumed threads of java, and print the stack of these threads.

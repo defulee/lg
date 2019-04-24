@@ -9,118 +9,31 @@ source ${current_dir}/../lib/common-functions
 function usage() {
 cat << EOF
 $(fmt_bold USAGE)
-$(basename $0) [options] [file]       stats data
+ldf $(basename $0) [options] [pattern] [file]       stats data
 
 $(fmt_bold DESCRIPTION)
-Collect statistics for data of the files or data from the std input. It will collect 
-1. Distributions (50%, 75%, 90%, 95%, 99%, 99.9% and 99.99% elements)
-2. Statistics (min, max, average, sum, lines)
-2. Histogram 
+stats data use regex show by histogram
+[file] the file from which to statistics are collected. if the file is not specified, it will collect statistics for data from $(fmt_ul stdin).
 
-$(fmt_bold OPTIONS)
-    [file]          the file from which to statistics are collected.
-                    if the file is not specified, it will collect statistics for data from $(fmt_ul stdin).
+The pattern default is *extended* regex.
+$(fmt_bold Options):
+  -d, --dir              the directory that find jar files, default is current directory.
+                         this option can specify multiply times to find in multiply directory.
+  -E, --extended-regexp  PATTERN is an extended regular expression (*default*)
+  -F, --fixed-strings    PATTERN is a set of newline-separated strings
+  -G, --basic-regexp     PATTERN is a basic regular expression
+  -P, --perl-regexp      PATTERN is a Perl regular expression
+  -h, --help             display this help and exit
+    
 
 $(fmt_bold NOTE)
-1. The data must be one number each line.
-2. The file supports both plain text file and $(fmt_bold gzipped) file (with $(fmt_bold .gz) suffix).
+1. The file supports both plain text file and $(fmt_bold gzipped) file (with $(fmt_bold .gz) suffix).
+
 EOF
 }
 
-# 读取文件内容，兼容.gz文件格式
-function scat() {
-    if [ "${1##*.}"x = "gz"x ];then
-        zcat "${1}" 
-    else
-        cat "${1}"
-    fi
-}
-
 function stats() {
-    awk -v lines="$1" '
-        function line_index(p) {
-            return 1 + int((lines - 1) * p); 
-        } 
-        function cmp_num_str_val(i1, v1, i2, v2,   n1, n2) {
-            # numbers before string value comparison, ascending order
-            n1 = v1 + 0
-            n2 = v2 + 0
-            if (n1 == v1)
-                return (n2 == v2) ? (n1 - n2) : -1
-            else if (n2 == v2)
-                return 1
-            return (v1 < v2) ? -1 : (v1 != v2)
-        }
-
-        BEGIN {
-            p[50]=line_index(0.5); 
-            p[75]=line_index(0.75);
-            p[90]=line_index(0.9); 
-            p[95]=line_index(0.95);
-            p[99]=line_index(0.99);
-            p[999]=line_index(0.999);
-            p[9999]=line_index(0.9999);
-
-            pi[50]=0; 
-            pi[75]=0;
-            pi[90]=0; 
-            pi[95]=0;
-            pi[99]=0;
-            pi[999]=0;
-            pi[9999]=0;
-            pi[max]=0
-
-            sum=0;
-            count=0;
-        }
-        
-        NR == 1 { 
-            min=$0; 
-            max=$0; 
-            print "Distributions:"
-        }
-        NR == p[50] { print "50%\t", $0 }
-        NR == p[75] { print "75%\t", $0 }
-        NR == p[90] { print "90%\t", $0 }
-        NR == p[95] { print "95%\t", $0 }
-        NR == p[99] { print "99%\t", $0 }
-        NR == p[999] { print "99.9%\t", $0 }
-        NR == p[9999] { print "99.99%\t", $0 }
-        min > $0 { min = $0; }
-        max < $0 { max = $0; }
-
-        NR <= p[50] { pi[50]++ }
-        NR > p[50] && NR <= p[75] { pi[75]++ }
-        NR > p[75] && NR <= p[90] { pi[90]++ }
-        NR > p[90] && NR <= p[95] { pi[95]++ }
-        NR > p[95] && NR <= p[99] { pi[99]++ }
-        NR > p[99] && NR <= p[999] { pi[999]++ }
-        NR > p[999] && NR <= p[9999] { pi[9999]++ }
-        NR > p[9999] { pi["max"]++ }
-        { sum+=$0; count++; }
-        END {
-            if (count > 0) {
-                print "\nStatistics:"
-                print "min\t", min;
-                print "max\t", max;
-                print "average\t", sum/count;
-                print "sum\t", sum;
-                print "lines\t", count;
-
-                print "\nHistogram:"
-                for (interval in pi) {
-                    if (interval != "") {
-                        s="|";
-                        percent = ((pi[interval] / count) * 100);
-                        for (i = 1; i <= percent; ++i) {
-                            s=s"▇"
-                        }
-                        printf( "<=p%s\t%s %s %s\n", interval, pi[interval], s, percent"%") | "sort";
-                    }
-                }
-            }
-        }
-    '
+    grep ${regex_mode} "${pattern}" | sort | uniq -c | sort -nr | histogram 2
 }
 
 function stats_from_stream() {
@@ -132,19 +45,42 @@ function stats_from_stream() {
     rm -f "${temp_file}"
 }
 
+# parse options
+args=()
+regex_mode=-E
 while [ $# -gt 0 ]; do
-    flag="$1"
-    shift
-    case "$flag" in
-        -h|--help)
-            usage
-            exit 0
-            ;;
-        *)
-            file="$flag"
-            ;;
+    case "$1" in
+    -E|--extended-regexp)
+        regex_mode=-E
+        shift
+        ;;
+    -F|--fixed-strings)
+        regex_mode=-F
+        shift
+        ;;
+    -G|--basic-regexp)
+        regex_mode=-G
+        shift
+        ;;
+    -P|--perl-regexp)
+        regex_mode=-P
+        shift
+        ;;
+    -h|--help)
+        usage
+        ;;
+    *)
+        args=("${args[@]}" "$1")
+        shift
+        ;;
     esac
 done
+
+readonly regex_mode="${regex_mode}o"
+
+[ "${#args[@]}" -lt 1 ] && { echo "not specify a pattern used during the match of the input!" 1>&2 ; usage; }
+readonly pattern="${args[0]}"
+readonly file="${args[1]}"
 
 if [ -n "${file}" ]; then
     if [ -r "${file}" ]; then

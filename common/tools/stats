@@ -41,17 +41,7 @@ function stats() {
         function line_index(p) {
             return 1 + int((lines - 1) * p); 
         } 
-        function cmp_num_str_val(i1, v1, i2, v2,   n1, n2) {
-            # numbers before string value comparison, ascending order
-            n1 = v1 + 0
-            n2 = v2 + 0
-            if (n1 == v1)
-                return (n2 == v2) ? (n1 - n2) : -1
-            else if (n2 == v2)
-                return 1
-            return (v1 < v2) ? -1 : (v1 != v2)
-        }
-
+       
         BEGIN {
             p[50]=line_index(0.5); 
             p[75]=line_index(0.75);
