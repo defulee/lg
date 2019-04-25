@@ -175,7 +175,7 @@ Options:
 ```
 
 - greys
-[greys](https://github.com/oldmanpushcart/greys-anatomy)
+> 见：[greys](https://github.com/oldmanpushcart/greys-anatomy)
 
 - highest_cpu_threads
 > Find out the highest cpu consumed threads of java, and print the stack of these threads.
