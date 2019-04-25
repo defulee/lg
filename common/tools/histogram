@@ -33,7 +33,7 @@ EOF
 }
 
 function stats() {
-    grep ${regex_mode} "${pattern}" | sort | uniq -c | sort -nr | histogram 2
+    grep ${regex_mode} "${pattern}" | sort | uniq -c | sort -nr | histogram -s
 }
 
 function stats_from_stream() {

@@ -72,11 +72,30 @@ function check_utils() {
 }
 
 # 绘制直方图， 输入格式为：多行，每行格式为：keyword count 或者 count keyword
-# 参数：keyword_col，候选：1，2 默认1
+# 参数：默认-s
+#   -s|--suffix: count keyword 模式；
+#   -p|--prefix: keyword count 模式
 function histogram() {
-    keyword_col=${1:-1}
-    awk -v keyword_col="${keyword_col}" '{
-        if (keyword_col==1){
+    keyword_loc="suffix"
+    while getopts "ps" opt; do
+        case "$opt" in
+        p)
+            keyword_loc="prefix"
+            ;;
+        s)
+            keyword_loc="suffix"
+            ;;
+        h)
+            usage
+            ;;
+        \?)
+        echo "default histogram keyword_loc ${keyword_loc}" 
+            ;;
+        esac
+    done
+
+    awk -v keyword_loc="${keyword_loc}" '{
+        if (keyword_loc=="prefix"){
             split ($0, arr)
             str_len=length($0)
             arr_len=length(arr)
@@ -85,6 +104,7 @@ function histogram() {
             keyword=substr($0,0,str_len-cnt_len)
             count[keyword] = cnt
             total += cnt
+            print($0,"->",str_len,arr_len,cnt,cnt_len,keyword,total,count[keyword])
         } else {
             len=length($1)
             keyword=substr($0,len)
@@ -93,9 +113,6 @@ function histogram() {
         }
     } 
     END{ 
-        for (k in count) {
-            printf(k, count[k]);
-        }
         for (k in count) {
             s="|";
             if (total > 0) {
