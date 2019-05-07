@@ -23,6 +23,7 @@ $(fmt_bold Options):
   -F, --fixed-strings    PATTERN is a set of newline-separated strings
   -G, --basic-regexp     PATTERN is a basic regular expression
   -P, --perl-regexp      PATTERN is a Perl regular expression
+  -r                     user raw data for histogram
   -h, --help             display this help and exit
     
 
@@ -33,7 +34,13 @@ EOF
 }
 
 function stats() {
-    grep ${regex_mode} "${pattern}" | sort | uniq -c | sort -nr | histogram -s
+    if [ "${regex_mode}" == "-ro" ];then
+        sort | histogram -s
+    elif [ "${regex_mode}" == "-Ro" ];then
+        sort | histogram -p
+    else
+        grep ${regex_mode} "${pattern}" | sort | uniq -c | sort -nr | histogram -s
+    fi
 }
 
 function stats_from_stream() {
@@ -66,6 +73,14 @@ while [ $# -gt 0 ]; do
         regex_mode=-P
         shift
         ;;
+    -r)
+        regex_mode=-r
+        shift
+        ;;
+    -R)
+        regex_mode=-R
+        shift
+        ;;
     -h|--help)
         usage
         ;;
@@ -80,7 +95,10 @@ readonly regex_mode="${regex_mode}o"
 
 [ "${#args[@]}" -lt 1 ] && { echo "not specify a pattern used during the match of the input!" 1>&2 ; usage; }
 readonly pattern="${args[0]}"
-readonly file="${args[1]}"
+file="${args[1]}"
+if [ "${regex_mode}" == "-ro" ] || [ "${regex_mode}" == "-Ro" ];then
+    file="${args[0]}"
+fi
 
 if [ -n "${file}" ]; then
     if [ -r "${file}" ]; then

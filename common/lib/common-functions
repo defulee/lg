@@ -104,7 +104,6 @@ function histogram() {
             keyword=substr($0,0,str_len-cnt_len)
             count[keyword] = cnt
             total += cnt
-            print($0,"->",str_len,arr_len,cnt,cnt_len,keyword,total,count[keyword])
         } else {
             len=length($1)
             keyword=substr($0,len)
@@ -120,7 +119,7 @@ function histogram() {
                 for (i = 1; i <= percent; ++i) {
                     s=s"▇"
                 }
-                printf( "\t%s\t%s\t%s %s\n", k, count[k], s, percent"%");
+                printf( "%s\t%s\t%s %s\n", k, count[k], s, percent"%");
             }
         }
     }
