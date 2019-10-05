@@ -5,10 +5,10 @@ if command -v git &> /dev/null; then
 	git clone --depth 1 https://github.com/defulee/ldf.git 
     cd ldf
 
-    echo -e "\e[1;34mprepare install custom tools...\e[0m"
+    echo -e "\e[1;34m prepare install custom tools... \e[0m"
     ./custom/install.sh
 
-    echo -e "\e[1;34mprepare make install ldf to path...\e[0m"
+    echo -e "\e[1;34m prepare make install ldf to path... \e[0m"
     make install
     source ldf-complete
 fi
