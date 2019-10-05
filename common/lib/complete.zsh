@@ -1,8 +1,8 @@
 #!/bin/zsh
-### ldf zsh complete
-function ldf_zsh_complete {
+### moto zsh complete
+function moto_zsh_complete {
 	reply=(
-	$(cat $HOME/.ldf/cmds.cache|xargs echo)
+	$(cat $HOME/.moto/cmds.cache|xargs echo)
 	)
 }
-compctl -K ldf_zsh_complete ldf
+compctl -K moto_zsh_complete moto

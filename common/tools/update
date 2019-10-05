@@ -1,14 +1,14 @@
 #!/bin/bash
-### update ldf
+### update moto
 
-echo "update ldf ..."
-cd ${LDF_DIR} && git pull
-for folder in `ls -l ${LDF_DIR}/custom | grep ^d | awk '{print $9}'` ;do
-    if [ ! -d ${LDF_DIR}/custom/${folder}/tools ]; then
+echo "update moto ..."
+cd ${moto_DIR} && git pull
+for folder in `ls -l ${moto_DIR}/custom | grep ^d | awk '{print $9}'` ;do
+    if [ ! -d ${moto_DIR}/custom/${folder}/tools ]; then
     continue;
     fi
-    echo "update ldf/custom/${folder} ..."
-    cd ${LDF_DIR}/custom/${folder} && git pull | grep 'file changed' &> /dev/null && wtool configure "."
+    echo "update moto/custom/${folder} ..."
+    cd ${moto_DIR}/custom/${folder} && git pull | grep 'file changed' &> /dev/null && wtool configure "."
 done
 
 echo "update finished!"

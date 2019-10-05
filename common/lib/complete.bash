@@ -1,12 +1,12 @@
 #!/bin/bash
-### ldf bash complete
-function ldf_bash_complete {
+### moto bash complete
+function moto_bash_complete {
 	local prev cur opts
 	COMPREPLY=()
 	cur="${2}"
     prev="${1}"
-	opts=$(cat $HOME/.ldf/cmds.cache | xargs echo)
+	opts=$(cat $HOME/.moto/cmds.cache | xargs echo)
     COMPREPLY=( $( compgen -W "$opts" -- $cur ) )
 }
-export -f ldf_bash_complete
-complete -F ldf_bash_complete -A file ldf
+export -f moto_bash_complete
+complete -F moto_bash_complete -A file moto

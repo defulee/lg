@@ -1,10 +1,10 @@
 #### install 
 
 ```
-curl -fsSL https://raw.githubusercontent.com/defulee/ldf/master/install.sh | bash
+curl -fsSL https://raw.githubusercontent.com/defulee/moto/master/install.sh | bash
 ```
 
-#### ldf useful toolset
+#### moto useful toolset
 
 ``` text
        _
@@ -15,10 +15,10 @@ curl -fsSL https://raw.githubusercontent.com/defulee/ldf/master/install.sh | bas
             `
 
 USAGE
-ldf list:       show all commands
-ldf command:    execute a command(such as color、stats)
-ldf update:     update ldf
-ldf uninstall:  uninstall ldf
+moto list:       show all commands
+moto command:    execute a command(such as color、stats)
+moto update:     update moto
+moto uninstall:  uninstall moto
 ```
 
 #### Available commands
@@ -30,7 +30,7 @@ color               : terminal color
 histogram           : 统计数据出现频次，并以直方图显示
 number              : number conversion
 stats               : collect statistics of data from a file or stdin
-update              : update ldf
+update              : update moto
 
 ------------- java --------------
 btrace              : start btrace debugger
@@ -44,7 +44,7 @@ jargrep             : grep text in jars
 
 #### 命令介绍
 - update
-> 更新ldf
+> 更新moto
 
 - color
 > 显示terminal的文字彩色效果及其打印方式
@@ -132,17 +132,13 @@ Histogram:
 10: 10
 16: 0xa
 ```
-
-- btrace
-> 见：[BTrace](https://github.com/btraceio/btrace)
-
 - find_in_jars
 - jargrep
 - gc
 ```
-Usage: ldf gc [OPTION] pid [<interval> [<count>]]
+Usage: moto gc [OPTION] pid [<interval> [<count>]]
 GC相关:显示堆中各代垃圾收集统计、显示堆中各代的内存统计
-Example: ldf gc -util 1234 1000 10
+Example: moto gc -util 1234 1000 10
 
 Options:
     -cause  ref: jstat -gccause; 垃圾收集统计（包含原因）;默认1秒, 10次;(interval=1000, count=10);
@@ -158,9 +154,9 @@ Options:
 
 - heap
 ```
-Usage: ldf heap [OPTION] pid [arg]
+Usage: moto heap [OPTION] pid [arg]
 堆对象相关:dump heap到文件、显示jvm heap中top20的对象、显示Java堆详细信息、显示在F-Queue队列等待Finalizer线程执行finalizer方法的对象
-Example: ldf heap -dumplive 1234
+Example: moto heap -dumplive 1234
 
 Options:
     -dump       ref:jmap -dump:format=b,file=heap.bin pid 生成堆转储快照dump文件
@@ -174,8 +170,8 @@ Options:
     -finalizerinfo ref:jmap -finalizerinfo; 显示在F-Queue队列等待Finalizer线程执行finalizer方法的对象
 ```
 
-- greys
-> 见：[greys](https://github.com/oldmanpushcart/greys-anatomy)
+- arthas
+> 见：[arthas](https://github.com/alibaba/arthas)
 
 - highest_cpu_threads
 > Find out the highest cpu consumed threads of java, and print the stack of these threads.

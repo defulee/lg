@@ -9,7 +9,7 @@ source ${current_dir}/../lib/common-functions
 function usage() {
 cat << EOF
 $(fmt_bold USAGE)
-ldf $(basename $0) [options] [pattern] [file]       stats data
+moto $(basename $0) [options] [pattern] [file]       stats data
 
 $(fmt_bold DESCRIPTION)
 stats data use regex show by histogram
