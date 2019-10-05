@@ -15,6 +15,5 @@ install:
 	@echo 'install finished! type "ldf" to show usages.'
 uninstall:
 	@rm -f ${target_app}
-	# @echo 'ldf uninstall finished!'
 
 
