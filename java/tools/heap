@@ -3,10 +3,10 @@
 ### 堆对象相关:dump heap到文件、显示jvm heap中top20的对象、显示Java堆详细信息、显示在F-Queue队列等待Finalizer线程执行finalizer方法的对象
 
 usage() {
-    cat << EOF
-Usage: ldf `basename $0` [OPTION] pid [arg]
+    cat <<EOF
+Usage: ldf $(basename $0) [OPTION] pid [arg]
 堆对象相关:dump heap到文件、显示jvm heap中top20的对象、显示Java堆详细信息、显示在F-Queue队列等待Finalizer线程执行finalizer方法的对象
-Example: ldf `basename $0` -dumplive 1234 
+Example: ldf $(basename $0) -dumplive 1234 
 
 Options:
     -dump       ref:jmap -dump:format=b,file=heap.bin pid 生成堆转储快照dump文件
@@ -29,52 +29,53 @@ fi
 cmd=""
 flag="$1"
 case "$flag" in
-    -h|--help)
-        usage
-        exit 0
+-h | --help)
+    usage
+    exit 0
+    ;;
+-dump)
+    cmd="jmap -dump:format=b,file=heap.bin"
+    ;;
+-dumplive)
+    cmd="jmap -dump:live,format=b,file=heap.bin"
+    ;;
+-histo)
+    cmd="jmap -histo"
+    ;;
+-histolive)
+    cmd="jmap -histo:live"
+    ;;
+-heap)
+    cmd="jmap -heap"
+    ;;
+-clstats)
+    cmd="jmap -clstats"
+    ;;
+-finalizerinfo)
+    cmd="jmap -finalizerinfo"
+    ;;
+*)
+    usage
+    exit 1
+    ;;
+esac
+pid=${2}
+shift
+shift
+
+arg="${@}"
+if [ $# -lt 1 ]; then
+    case "$flag" in
+    -dump | -dumplive | -heap | -clstats | -finalizerinfo)
+        ${cmd} ${pid}
         ;;
-    -dump)
-        cmd="jmap -dump:format=b,file=heap.bin"
-        ;;
-    -dumplive)
-        cmd="jmap -dump:live,format=b,file=heap.bin"
-        ;;
-    -histo)
-        cmd="jmap -histo"
-        ;;
-    -histolive)
-        cmd="jmap -histo:live"
-        ;;
-    -heap)
-        cmd="jmap -heap"
-        ;;
-    -clstats)
-        cmd="jmap -clstats"
-        ;;
-    -finalizerinfo)
-        cmd="jmap -finalizerinfo"
+    -histo | -histolive)
+        col=${1:-2}
+        ${cmd} ${pid} | sort -nr -k ${col} | head -n 21
         ;;
     *)
         usage
         exit 1
         ;;
-esac
-pid=${2}
-shift;shift;
-
-arg="${@}"
-if [ $# -lt 1 ]; then
-    case "$flag" in
-        -dump|-dumplive|-heap|-clstats|-finalizerinfo)
-            ${cmd} ${pid}
-            ;;
-        -histo|-histolive)
-            col=${1:-2}
-            ${cmd} ${pid} | sort -nr -k ${col} | head -n 21
-            ;;
-        *)
-            usage
-            exit 1
-            ;;
     esac
 fi

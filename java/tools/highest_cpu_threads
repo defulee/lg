@@ -6,7 +6,7 @@
 #   $ ldf trace_java_threads
 #
 
-readonly cmd=`basename $0`
+readonly cmd=$(basename $0)
 readonly -a full_cmd=("$0" "$@")
 
 usage() {
@@ -35,7 +35,7 @@ while getopts "c:p:h" opt; do
         usage
         ;;
     \?)
-      echo "Invalid option: -$OPTARG" 
+        echo "Invalid option: -$OPTARG"
         ;;
     esac
 done
@@ -59,14 +59,14 @@ step() {
     } || echo "$@"
 }
 
-# Check pid 
+# Check pid
 [ -z "$pid" ] && {
     error "Error: pid parameter is not setup"
     usage 1
 }
 
 # Check the existence of jstack command!
-if ! command -v jstack &> /dev/null; then
+if ! command -v jstack &>/dev/null; then
     [ -z "$JAVA_HOME" ] && {
         error "Error: JAVA_HOME is not setup"
         exit 1
@@ -82,19 +82,19 @@ if ! command -v jstack &> /dev/null; then
     export PATH="$JAVA_HOME/bin:$PATH"
 fi
 
-readonly uuid=`date +%s`_${RANDOM}_$$
+readonly uuid=$(date +%s)_${RANDOM}_$$
 jstack_log=/tmp/${uuid}_${pid}
 
 cleanup() {
-    rm /tmp/${uuid}_* &> /dev/null
+    rm /tmp/${uuid}_* &>/dev/null
 }
 trap "cleanup" EXIT
 
 jstack_process() {
     [ ! -f "${jstack_log}" ] && {
-        jstack ${pid} > ${jstack_log}
+        jstack ${pid} >${jstack_log}
     }
-    
+
     [ ! -f "${jstack_log}" ] && {
         error "Fail to stack of java process(${pid}) under user(${USER})."
         exit 1
@@ -103,10 +103,10 @@ jstack_process() {
 
 print_thread_stack() {
     local line
-    while IFS=" " read -a line ; do
+    while IFS=" " read -a line; do
         local pid=${line[0]}
         local tid=${line[1]}
-        local tid_hex="0x`printf %x ${tid}`"
+        local tid_hex="0x$(printf %x ${tid})"
         local user=${line[2]}
         local pcpu=${line[4]}
 
@@ -117,7 +117,7 @@ print_thread_stack() {
     done
 }
 
-ps -Leo pid,lwp,user,command,%cpu --no-headers | \
-awk -v "pid=${pid}" '{if($1==pid)print $0}' | \
-sort -k5 -nr | head -n "${count}" | \
-print_thread_stack
+ps -Leo pid,lwp,user,command,%cpu --no-headers |
+    awk -v "pid=${pid}" '{if($1==pid)print $0}' |
+    sort -k5 -nr | head -n "${count}" |
+    print_thread_stack
