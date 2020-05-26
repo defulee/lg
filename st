@@ -1,15 +1,15 @@
 #!/bin/bash
 
-export LDF_DIR=$(dirname "$(echo "$0" | sed -e '')")
+export st_DIR=$(dirname "$(echo "$0" | sed -e '')")
 
 # load rcfile
-rcfile="${LDF_DIR}/ldfrc"
+rcfile="${st_DIR}/strc"
 [ -r "${rcfile}" ] && source "${rcfile}"
-export ldf_custom_rcfile="${HOME}/.ldfrc"
-[ -r "${ldf_custom_rcfile}" ] && source "${ldf_custom_rcfile}"
+export st_custom_rcfile="${HOME}/.strc"
+[ -r "${st_custom_rcfile}" ] && source "${st_custom_rcfile}"
 
 # load common lib functions
-common_lib="${LDF_DIR}/common/lib/common-functions"
+common_lib="${st_DIR}/common/lib/common-functions"
 [ -r "${common_lib}" ] && source ${common_lib}
 
 logo() {
@@ -25,10 +25,10 @@ logo() {
 usage() {
 cat << EOF
 $(fmt_bold USAGE)
-ldf list:       show all commands 
-ldf command:    execute a command(such as color、stats)
-ldf update:     update ldf
-ldf uninstall:  uninstall ldf
+st list:       show all commands 
+st command:    execute a command(such as color、stats)
+st update:     update st
+st uninstall:  uninstall st
 EOF
 }
 
@@ -48,7 +48,7 @@ find_commands() {
             desc=`grep '^###' ${tools_dir}/${cmd} | cut -c 4-`
             if [ "${desc}" != ""  ]; then
                 fmt_cmd "${cmd}\t:$desc"
-                echo "${cmd}" >> $HOME/.ldf/cmds.cache
+                echo "${cmd}" >> $HOME/.st/cmds.cache
             fi
         done
         echo ''
@@ -57,19 +57,19 @@ find_commands() {
 }
 
 list() {
-    rm -f $HOME/.ldf/cmds.cache 2>/dev/null
-    mkdir $HOME/.ldf 2>/dev/null
+    rm -f $HOME/.st/cmds.cache 2>/dev/null
+    mkdir $HOME/.st 2>/dev/null
     echo 'Available commands:'
-    find_commands ${LDF_DIR}
-    find_commands ${LDF_DIR}/custom
+    find_commands ${st_DIR}
+    find_commands ${st_DIR}/custom
     exit 0;
 }
 
 uninstall() {
-    echo -n "Uninstall ldf,(y)es or (n)o?"
+    echo -n "Uninstall st,(y)es or (n)o?"
     read choice < /dev/tty
-    if [ "${choice}" = "y" ] && [ "${LDF_DIR}" != "/" ];then
-	    cd ${LDF_DIR} && make uninstall && rm -rf ${LDF_DIR} && echo "ldf uninstall finished. Bye~"
+    if [ "${choice}" = "y" ] && [ "${st_DIR}" != "/" ];then
+	    cd ${st_DIR} && make uninstall && rm -rf ${st_DIR} && echo "st uninstall finished. Bye~"
     fi
     exit 0
 }
@@ -88,8 +88,8 @@ if [ "$1" = "uninstall" ]; then
     uninstall "$@"
 fi
 
-tools_dir=${LDF_DIR}/*/tools/
-custom_tools_dir=${LDF_DIR}/custom/*/tools/
+tools_dir=${st_DIR}/*/tools/
+custom_tools_dir=${st_DIR}/custom/*/tools/
 command_file=$1;shift
 command=`find ${tools_dir} -maxdepth 1 -name ${command_file} `
 

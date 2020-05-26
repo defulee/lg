@@ -1,8 +1,8 @@
 #!/bin/zsh
-### moto zsh complete
-function moto_zsh_complete {
+### st zsh complete
+function st_zsh_complete {
 	reply=(
-	$(cat $HOME/.moto/cmds.cache|xargs echo)
+	$(cat $HOME/.st/cmds.cache|xargs echo)
 	)
 }
-compctl -K moto_zsh_complete moto
+compctl -K st_zsh_complete st

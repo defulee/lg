@@ -1,12 +1,12 @@
 #!/bin/bash
-### moto bash complete
-function moto_bash_complete {
+### st bash complete
+function st_bash_complete {
 	local prev cur opts
 	COMPREPLY=()
 	cur="${2}"
     prev="${1}"
-	opts=$(cat $HOME/.moto/cmds.cache | xargs echo)
+	opts=$(cat $HOME/.st/cmds.cache | xargs echo)
     COMPREPLY=( $( compgen -W "$opts" -- $cur ) )
 }
-export -f moto_bash_complete
-complete -F moto_bash_complete -A file moto
+export -f st_bash_complete
+complete -F st_bash_complete -A file st
