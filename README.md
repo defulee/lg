@@ -1,10 +1,10 @@
 #### install 
 
 ```
-curl -fsSL https://raw.githubusercontent.com/defulee/moto/master/install.sh | bash
+curl -fsSL https://raw.githubusercontent.com/defulee/qu/master/install.sh | bash
 ```
 
-#### moto useful toolset
+#### useful toolset
 
 ``` text
        _
@@ -15,10 +15,10 @@ curl -fsSL https://raw.githubusercontent.com/defulee/moto/master/install.sh | ba
             `
 
 USAGE
-moto list:       show all commands
-moto command:    execute a command(such as color、stats)
-moto update:     update moto
-moto uninstall:  uninstall moto
+qu list:       show all commands
+qu command:    execute a command(such as color、stats)
+qu update:     update moto
+qu uninstall:  uninstall moto
 ```
 
 #### Available commands
@@ -44,7 +44,7 @@ jargrep             : grep text in jars
 
 #### 命令介绍
 - update
-> 更新moto
+> 更新 qu
 
 - color
 > 显示terminal的文字彩色效果及其打印方式
@@ -136,7 +136,7 @@ Histogram:
 - jargrep
 - gc
 ```
-Usage: moto gc [OPTION] pid [<interval> [<count>]]
+Usage: qu gc [OPTION] pid [<interval> [<count>]]
 GC相关:显示堆中各代垃圾收集统计、显示堆中各代的内存统计
 Example: moto gc -util 1234 1000 10
 
@@ -154,7 +154,7 @@ Options:
 
 - heap
 ```
-Usage: moto heap [OPTION] pid [arg]
+Usage: qu heap [OPTION] pid [arg]
 堆对象相关:dump heap到文件、显示jvm heap中top20的对象、显示Java堆详细信息、显示在F-Queue队列等待Finalizer线程执行finalizer方法的对象
 Example: moto heap -dumplive 1234
 
