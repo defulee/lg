@@ -1,7 +1,7 @@
 #### install 
 
 ```
-curl -fsSL https://raw.githubusercontent.com/defulee/qu/master/install.sh | bash
+curl -fsSL https://raw.githubusercontent.com/defulee/st/master/install.sh | bash
 ```
 
 #### useful toolset
@@ -15,10 +15,10 @@ curl -fsSL https://raw.githubusercontent.com/defulee/qu/master/install.sh | bash
             `
 
 USAGE
-qu list:       show all commands
-qu command:    execute a command(such as color、stats)
-qu update:     update moto
-qu uninstall:  uninstall moto
+st list:       show all commands
+st command:    execute a command(such as color、stats)
+st update:     update moto
+st uninstall:  uninstall moto
 ```
 
 #### Available commands
@@ -37,14 +37,14 @@ btrace              : start btrace debugger
 find_in_jars        : Find file in the jar files under current directory
 gc                  : GC相关:显示堆中各代垃圾收集统计、显示堆中各代的内存统计
 greys               : Java诊断工具
-heap                : 堆对象相关:dump heap到文件、显示jvm heap中top20的对象、显示Java堆详细信息、显示在F-Queue队列等待Finalizer线程执行finalizer方法的对象
+heap                : 堆对象相关:dump heap到文件、显示jvm heap中top20的对象、显示Java堆详细信息、显示在F-steue队列等待Finalizer线程执行finalizer方法的对象
 highest_cpu_threads : Find out the highest cpu consumed threads of java, and print the stack of these threads.
 jargrep             : grep text in jars
 ```
 
 #### 命令介绍
 - update
-> 更新 qu
+> 更新 st
 
 - color
 > 显示terminal的文字彩色效果及其打印方式
@@ -136,7 +136,7 @@ Histogram:
 - jargrep
 - gc
 ```
-Usage: qu gc [OPTION] pid [<interval> [<count>]]
+Usage: st gc [OPTION] pid [<interval> [<count>]]
 GC相关:显示堆中各代垃圾收集统计、显示堆中各代的内存统计
 Example: moto gc -util 1234 1000 10
 
@@ -154,8 +154,8 @@ Options:
 
 - heap
 ```
-Usage: qu heap [OPTION] pid [arg]
-堆对象相关:dump heap到文件、显示jvm heap中top20的对象、显示Java堆详细信息、显示在F-Queue队列等待Finalizer线程执行finalizer方法的对象
+Usage: st heap [OPTION] pid [arg]
+堆对象相关:dump heap到文件、显示jvm heap中top20的对象、显示Java堆详细信息、显示在F-steue队列等待Finalizer线程执行finalizer方法的对象
 Example: moto heap -dumplive 1234
 
 Options:
@@ -167,7 +167,7 @@ Options:
                     jvm heap中活动的top20的对象;0;参数：1:按实例数量排序,2:按内存占用排序，默认为1;1
     -heap       ref:jmap -heap; 显示Java堆详细信息
     -clstats       ref:jmap -clstats; 打印类加载器信息
-    -finalizerinfo ref:jmap -finalizerinfo; 显示在F-Queue队列等待Finalizer线程执行finalizer方法的对象
+    -finalizerinfo ref:jmap -finalizerinfo; 显示在F-steue队列等待Finalizer线程执行finalizer方法的对象
 ```
 
 - arthas
