@@ -1,0 +1,86 @@
+#!/usr/bin/python
+# -*- coding: UTF-8 -*-
+# 1. 提取excel文件指定列转为csv文件，使用空格分隔；2. 提取 excel 指定列并在列值附带引号，列之间使用逗号分隔
+
+import getopt
+import sys
+
+import pandas as pd
+import xlrd
+
+
+def help(script):
+    print('usage:', script,
+          '-s <separator> -q <quotes> -u <usecols> -i <inputfile.xlsx> -o <outputfile.csv>')
+
+
+def initArgs(argv):
+    '''
+    初始化参数
+    '''
+    infile = ''
+    outfile = ''
+    sep = ' '
+    quotes = False
+    usecols = []
+    try:
+        opts, args = getopt.getopt(argv[1:], "c:hi:o:qs:", [
+                                   "ifile=", "ofile=", "sep=", "usecols=", "quotes"])
+    except getopt.GetoptError:
+        help(argv[0])
+        sys.exit(2)
+    for opt, arg in opts:
+        if opt == '-h':
+            help(argv[0])
+            sys.exit()
+        elif opt in ("-i", "--ifile"):
+            infile = arg
+        elif opt in ("-o", "--ofile"):
+            outfile = arg
+        elif opt in ("-q", "--quotes"):
+            quotes = True
+        elif opt in ("-s", "--sep"):
+            sep = arg
+        elif opt in ("-c", "--usecols"):
+            usecols = arg.split(',')
+            usecols = list(map(int, usecols))
+    if infile == '':
+        print('输入文件为空')
+        help(argv[0])
+        sys.exit(1)
+    #  print('输入的文件为:', infile)
+    print(infile, outfile, quotes, sep, usecols)
+    return infile, outfile, quotes, sep, usecols
+
+
+def xlsx_to_csv(input_file=None, output_file=None, usecols=None):
+    print(input_file, output_file)
+    data_xls = pd.read_excel(input_file, index_col=0, usecols=usecols)
+    data_xls.to_csv(output_file, encoding='utf-8', sep=sep)
+
+
+def format_col(input_file=None, col=0, sep=',', quotes=False):
+    # 文件路径的中文转码，如果路径非中文可以跳过
+   #  file_path = input_file.decode('utf-8')
+    # 获取数据
+    data = xlrd.open_workbook(input_file)
+    # 获取sheet 此处有图注释（见图1）
+    table = data.sheet_by_index(0)
+    # 返回的结果集
+    for i in range(table.nrows):
+        if quotes:
+            print("'"+table.cell(i, col).value+"'"+sep)
+        else:
+            print(table.cell(i, col).value+sep)
+
+
+if __name__ == '__main__':
+    infile, outfile, quotes, sep, usecols = initArgs(sys.argv)
+    print(infile, outfile, quotes, sep, usecols)
+
+    # 输出文件只转成 csv 格式，且引号标识无效
+    if outfile != '':
+        xlsx_to_csv(input_file=infile, output_file=outfile, usecols=usecols)
+    else:
+       format_col(input_file=infile, col=usecols[0],sep=sep, quotes=quotes)
+    print("\n转化完成:", outfile)
