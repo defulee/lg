@@ -42,10 +42,11 @@ highest_cpu_threads : Find out the highest cpu consumed threads of java, and pri
 jargrep             : grep text in jars
 ```
 
-#### 命令介绍
+## 命令介绍
 - update
 > 更新 st
 
+#### common
 - color
 > 显示terminal的文字彩色效果及其打印方式
 ```
@@ -132,6 +133,21 @@ Histogram:
 10: 10
 16: 0xa
 ```
+
+- format
+	- 功能介绍
+      - 1. 提取excel文件指定列转为csv文件，使用空格分隔；
+      - 2. 提取 excel 指定列并在列值附带引号，列之间使用逗号分隔
+	- usage:
+	```
+	usage: /Users/terminus/dev/github/st/common/tools//format -s <separator> -q <quotes> -u <usecols> -i <inputfile.xlsx> -o <outputfile.csv>
+	
+	e.g.
+	st format -i /Users/terminus/Desktop/tt.xlsx -o /Users/terminus/Desktop/tt.csv  -q -s , -c 1,2 
+	```
+
+
+#### java
 - find_in_jars
 - jargrep
 - gc
