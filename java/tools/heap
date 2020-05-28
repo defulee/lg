@@ -4,9 +4,9 @@
 
 usage() {
     cat <<EOF
-Usage: moto $(basename $0) [OPTION] pid [arg]
+Usage: st $(basename $0) [OPTION] pid [arg]
 堆对象相关:dump heap到文件、显示jvm heap中top20的对象、显示Java堆详细信息、显示在F-Queue队列等待Finalizer线程执行finalizer方法的对象
-Example: moto $(basename $0) -dumplive 1234 
+Example: st $(basename $0) -dumplive 1234 
 
 Options:
     -dump       ref:jmap -dump:format=b,file=heap.bin pid 生成堆转储快照dump文件

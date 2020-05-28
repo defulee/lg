@@ -2,7 +2,7 @@
 ### grep text in jars
 
 if [ $# -lt 2 ]; then
-    echo 'Usage : moto jargrep text <path or filename>'
+    echo 'Usage : st jargrep text <path or filename>'
     exit 1
 fi
 

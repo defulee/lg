@@ -17,8 +17,8 @@ curl -fsSL https://raw.githubusercontent.com/defulee/st/master/install.sh | bash
 USAGE
 st list:       show all commands
 st command:    execute a command(such as color、stats)
-st update:     update moto
-st uninstall:  uninstall moto
+st update:     update st
+st uninstall:  uninstall st
 ```
 
 #### Available commands
@@ -30,7 +30,7 @@ color               : terminal color
 histogram           : 统计数据出现频次，并以直方图显示
 number              : number conversion
 stats               : collect statistics of data from a file or stdin
-update              : update moto
+update              : update st
 
 ------------- java --------------
 btrace              : start btrace debugger
@@ -138,7 +138,7 @@ Histogram:
 ```
 Usage: st gc [OPTION] pid [<interval> [<count>]]
 GC相关:显示堆中各代垃圾收集统计、显示堆中各代的内存统计
-Example: moto gc -util 1234 1000 10
+Example: st gc -util 1234 1000 10
 
 Options:
     -cause  ref: jstat -gccause; 垃圾收集统计（包含原因）;默认1秒, 10次;(interval=1000, count=10);
@@ -156,7 +156,7 @@ Options:
 ```
 Usage: st heap [OPTION] pid [arg]
 堆对象相关:dump heap到文件、显示jvm heap中top20的对象、显示Java堆详细信息、显示在F-steue队列等待Finalizer线程执行finalizer方法的对象
-Example: moto heap -dumplive 1234
+Example: st heap -dumplive 1234
 
 Options:
     -dump       ref:jmap -dump:format=b,file=heap.bin pid 生成堆转储快照dump文件

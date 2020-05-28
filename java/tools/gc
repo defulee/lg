@@ -4,9 +4,9 @@
 
 usage() {
     cat <<EOF
-Usage: moto `basename $0` [OPTION] pid [<interval> [<count>]]
+Usage: st `basename $0` [OPTION] pid [<interval> [<count>]]
 GC相关:显示堆中各代垃圾收集统计、显示堆中各代的内存统计
-Example: moto `basename $0` -util 1234 1000 10
+Example: st `basename $0` -util 1234 1000 10
 
 Options:
     -cause  ref: jstat -gccause; 垃圾收集统计（包含原因）;默认1秒, 10次;(interval=1000, count=10); 
