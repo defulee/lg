@@ -1,6 +1,6 @@
 #!/usr/bin/python
 # -*- coding: UTF-8 -*-
-# 1. 提取excel文件指定列转为csv文件，使用空格分隔；2. 提取 excel 指定列并在列值附带引号，列之间使用逗号分隔
+### 1. 提取excel文件指定列转为csv文件，使用空格分隔；2. 提取 excel 指定列并在列值附带引号，列之间使用逗号分隔
 
 import getopt
 import sys
