@@ -2,13 +2,13 @@
 ### update tb
 
 echo "update st ..."
-cd ${st_DIR} && git pull
-for folder in `ls -l ${st_DIR}/custom | grep ^d | awk '{print $9}'` ;do
-    if [ ! -d ${st_DIR}/custom/${folder}/tools ]; then
+cd ${tb_dir} && git pull
+for folder in `ls -l ${tb_dir}/custom | grep ^d | awk '{print $9}'` ;do
+    if [ ! -d ${tb_dir}/custom/${folder}/tools ]; then
     continue;
     fi
     echo "update st/custom/${folder} ..."
-    cd ${st_DIR}/custom/${folder} && git pull | grep 'file changed' &> /dev/null && wtool configure "."
+    cd ${tb_dir}/custom/${folder} && git pull | grep 'file changed' &> /dev/null && wtool configure "."
 done
 
 echo "update finished!"
