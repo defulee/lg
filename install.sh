@@ -2,7 +2,7 @@
 
 if command -v git &> /dev/null; then
 	[ ! -d "qu" ] &&
-	git clone --depth 1 https://github.com/defulee/st.git 
+	git clone --depth 1 https://github.com/defulee/toolbox.git
     cd qu
 
     echo -e "$(tput bold)prepare install custom tools...$(tput sgr0)"
@@ -10,5 +10,5 @@ if command -v git &> /dev/null; then
 
     echo -e "$(tput bold)prepare install custom tools...$(tput sgr0)"
     make install
-    source st-complete
+    source tb-complete
 fi

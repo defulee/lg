@@ -1,5 +1,5 @@
 #!/bin/bash
-### update st
+### update tb
 
 echo "update st ..."
 cd ${st_DIR} && git pull

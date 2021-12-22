@@ -1,5 +1,5 @@
 #!/bin/zsh
-### st zsh complete
+### tb zsh complete
 function st_zsh_complete {
 	reply=(
 	$(cat $HOME/.st/cmds.cache|xargs echo)

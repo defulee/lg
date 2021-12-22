@@ -1,5 +1,5 @@
 #!/bin/bash
-### st bash complete
+### tb bash complete
 function st_bash_complete {
 	local prev cur opts
 	COMPREPLY=()
