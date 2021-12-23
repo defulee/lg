@@ -1,2 +1,3 @@
 custom/book/tools/arthas
 /*.txt
+*.pyc
