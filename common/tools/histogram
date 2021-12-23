@@ -2,7 +2,7 @@
 
 ### 统计数据出现频次，并以直方图显示
 
-# load common lib functions
+# load common libs functions
 current_dir=$(dirname "$(echo "$0" | sed -e '')")
 source ${current_dir}/../lib/common-functions
 

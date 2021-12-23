@@ -1,29 +1,27 @@
-#!/usr/bin/python
+#!/usr/local/bin/python3.7
 # -*- coding: UTF-8 -*-
 ### 查询下载小说
 
-import sys, argparse
-from tempfile import TemporaryFile  # , NamedTemporaryFile
+import argparse
+import os
+import sys
+
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from lib.Biququ import search, get_chapters, get_chapter_content
 
 # 1. 读取
-rstFile = TemporaryFile(mode="w+")
 keyword = ''
-file = ''
 
 
 def parseArgs(argv):
     parser = argparse.ArgumentParser()
     parser.description = '参数解析'
     parser.add_argument('-k', '--keyword', required=True, help='搜索关键字')
-    parser.add_argument('-f', '--file', required=True, help='待搜索的日志文件')
     args = parser.parse_args()
 
-    global keyword, file
+    global keyword
     keyword = args.keyword
-    file = args.file
     print('keyword:', keyword)
-    print('file:', file)
 
 
 class Book:
@@ -39,13 +37,10 @@ class Book:
 if __name__ == '__main__':
 
     parseArgs(sys.argv[1:])
-    print('keyword:', keyword)
-    print('file:', file)
 
     # 0. 创建一个书籍类
     book = Book()
 
-    keyword = '顶级气运'
     # 1. 搜索小说，返回搜索结果
     search_res = search(keyword)
     print(search_res)
@@ -64,10 +59,10 @@ if __name__ == '__main__':
     # 4. 根据小说链接解析目录，返回目录列表
     chapters = get_chapters(book.novel_url)
     book.contents = chapters
-    print(chapters)
+    # print(chapters)
 
     # 5. 遍历小说目录链接，解析正文，返回正文段落列表
-    fo = open(keyword + ".txt", "w")
+    fo = open(os.getcwd() + "/" + keyword + ".txt", "w")
     for id, chapter in enumerate(book.contents):
         print("处理章节: " + chapter['章节名'])
         url = chapter["章节链接"]
@@ -75,4 +70,4 @@ if __name__ == '__main__':
         book.contents[id]["正文"] = context
         fo.write(chapter['章节名'] + "\n")
         fo.write("".join(context) + "\n\n")
-    print("执行完成")
+    print("执行完成，文件路径：" + os.getcwd() + "/" + keyword + ".txt")

@@ -8,7 +8,7 @@ rcfile="${tb_dir}/tbrc"
 export st_custom_rcfile="${HOME}/.tbrc"
 [ -r "${st_custom_rcfile}" ] && source "${st_custom_rcfile}"
 
-# load common lib functions
+# load common libs functions
 common_lib="${tb_dir}/common/lib/common-functions"
 [ -r "${common_lib}" ] && source ${common_lib}
 

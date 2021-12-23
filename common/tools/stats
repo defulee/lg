@@ -2,7 +2,7 @@
 
 ### collect statistics of data from a file or stdin
 
-# load common lib functions
+# load common libs functions
 current_dir=$(dirname "$(echo "$0" | sed -e '')")
 source ${current_dir}/../lib/common-functions
 
