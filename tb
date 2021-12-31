@@ -4,9 +4,9 @@ export tb_dir=$(dirname "$(echo "$0" | sed -e '')")
 
 # load rcfile
 rcfile="${tb_dir}/tbrc"
-[ -r "${rcfile}" ] && source "${rcfile}"
+[ -r "${rcfile}" ] && source ${rcfile}
 export st_custom_rcfile="${HOME}/.tbrc"
-[ -r "${st_custom_rcfile}" ] && source "${st_custom_rcfile}"
+[ -r "${st_custom_rcfile}" ] && source ${st_custom_rcfile}
 
 # load common libs functions
 common_lib="${tb_dir}/common/lib/common-functions"
@@ -33,9 +33,9 @@ EOF
 }
 
 find_commands() {
-    for folder in `ls -l $1 | grep ^d | awk '{print $9}'` ;do
+    for folder in `ls -l ${1} | grep ^d | awk '{print $9}'` ;do
         tools_dir="$1/${folder}/tools"
-        if [ ! -d ${tools_dir} ]; then
+        if [ ! -d "${tools_dir}" ]; then
             continue;
         fi
         cmds=`ls -l ${tools_dir} | grep -v '^d' | awk '{print $9}'`
@@ -43,7 +43,7 @@ find_commands() {
             continue;
         fi
 
-        fmt_title ${folder} 
+        fmt_title ${folder}
         for cmd in ${cmds} ;do
             desc=`grep '^###' ${tools_dir}/${cmd} | cut -c 4-`
             if [ "${desc}" != ""  ]; then

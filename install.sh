@@ -1,14 +1,14 @@
 #!/bin/bash
 
 if command -v git &> /dev/null; then
-	[ ! -d "qu" ] &&
+	[ ! -d "tb" ] &&
 	git clone --depth 1 https://github.com/defulee/toolbox.git
-    cd qu
+  cd tb
 
-    echo -e "$(tput bold)prepare install custom tools...$(tput sgr0)"
-    ./custom/install.sh
+  echo -e "$(tput bold)prepare install custom tools...$(tput sgr0)"
+  ./custom/install.sh
 
-    echo -e "$(tput bold)prepare install custom tools...$(tput sgr0)"
-    make install
-    source tb-complete
+  echo -e "$(tput bold)prepare install custom tools...$(tput sgr0)"
+  make install
+  source tb-complete
 fi

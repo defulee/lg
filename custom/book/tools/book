@@ -6,8 +6,11 @@ import argparse
 import os
 import sys
 
-sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-from lib.Biququ import search, get_chapters, get_chapter_content
+from prettytable import PrettyTable
+
+sys.path.append(os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(__file__)))))
+
+from custom.book.lib.Biququ import search, get_chapters, get_chapter_content
 
 # 1. 读取
 keyword = ''
@@ -21,53 +24,47 @@ def parseArgs(argv):
 
     global keyword
     keyword = args.keyword
-    print('keyword:', keyword)
-
-
-class Book:
-    name = "未知"  # 书名
-    cover_url = ''  # 封面URL
-    description = ""  # 简介
-    author = "未知"  # 作者
-    contents = []  # 目录
-    latest_chapter = []  # 最新章节
-    novel_url = ''  # 小说链接
 
 
 if __name__ == '__main__':
-
     parseArgs(sys.argv[1:])
 
-    # 0. 创建一个书籍类
-    book = Book()
-
     # 1. 搜索小说，返回搜索结果
-    search_res = search(keyword)
-    print(search_res)
+    search_ret = search(keyword)
+    bt = PrettyTable(["序号", "书名", "作者", "链接"])
+    for idx, book_ret in enumerate(search_ret):
+        bt.add_row([idx + 1, book_ret["书名"], book_ret["作者"], book_ret["小说链接"]])
+    bt.align["书名"] = 'l'
+    bt.align["链接"] = 'l'
+    print(bt)
+
+    choice = input("请输入要下载书所在序号[1-" + str(len(search_ret)) + "]: ")
+    while not choice.isdigit() or int(choice) > len(search_ret) or int(choice) < 1:
+        choice = input("输入不正确，期望输入[1-" + str(len(search_ret)) + "]范围内的数字，请重新输入: ")
 
     # 2. 默认选择第一个结果，返回结果的书籍信息
-    book_info = search_res[0]
-    print(book_info)
+    book_info = search_ret[int(choice) - 1]
 
-    # 3. 写入书籍信息
-    book.name = book_info["书名"]
-    book.author = book_info["作者"]
-    book.description = book_info["简介"]
-    book.cover_url = book_info["封面URL"]
-    book.novel_url = book_info["小说链接"]
+    # 3. 选择的书籍信息
+    print("已选择书本:\n", "\t书名:", book_info["书名"], "\n\t作者:", book_info["作者"], "\n\t链接:", book_info["小说链接"])
 
-    # 4. 根据小说链接解析目录，返回目录列表
-    chapters = get_chapters(book.novel_url)
-    book.contents = chapters
-    # print(chapters)
+    # 4. 根据小说链接解析目录
+    chapters = get_chapters(book_info["小说链接"])
+    bt = PrettyTable(["列1", "列2", "列3"])
+    for idx in range(len(chapters) - 3):
+        bt.add_row([chapters[idx]["章节名"], chapters[idx + 1]["章节名"], chapters[idx + 2]["章节名"]])
+        idx += 3
+    bt.align["列1"] = 'l'
+    bt.align["列2"] = 'l'
+    bt.align["列3"] = 'l'
+    bt.header = False
+    print(bt)
 
     # 5. 遍历小说目录链接，解析正文，返回正文段落列表
     fo = open(os.getcwd() + "/" + keyword + ".txt", "w")
-    for id, chapter in enumerate(book.contents):
-        print("处理章节: " + chapter['章节名'])
-        url = chapter["章节链接"]
-        context = get_chapter_content(url)
-        book.contents[id]["正文"] = context
+    for idx, chapter in enumerate(chapters):
+        print("下载章节:", chapter['章节名'], "[" + str(idx) + "/" + str(len(chapters)) + "]")
+        context = get_chapter_content(chapter["章节链接"])
         fo.write(chapter['章节名'] + "\n")
         fo.write("".join(context) + "\n\n")
     print("执行完成，文件路径：" + os.getcwd() + "/" + keyword + ".txt")
