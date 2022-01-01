@@ -1,3 +1,5 @@
 custom/book/tools/arthas
 /*.txt
 *.pyc
+*.log
+*.json
