@@ -1,7 +1,7 @@
 #### install 
 
 ```
-curl -fsSL https://raw.githubusercontent.com/defulee/st/master/install.sh | bash
+curl -fsSL https://raw.githubusercontent.com/defulee/toolbox/master/install.sh | bash
 ```
 
 #### useful toolset
@@ -15,10 +15,10 @@ curl -fsSL https://raw.githubusercontent.com/defulee/st/master/install.sh | bash
             `
 
 USAGE
-st list:       show all commands
-st command:    execute a command(such as color、stats)
-st update:     update st
-st uninstall:  uninstall st
+ftool list:       show all commands
+ftool command:    execute a command(such as color、stats)
+ftool update:     update ftool
+ftool uninstall:  uninstall ftool
 ```
 
 #### Available commands
@@ -30,7 +30,7 @@ color               : terminal color
 histogram           : 统计数据出现频次，并以直方图显示
 number              : number conversion
 stats               : collect statistics of data from a file or stdin
-update              : update st
+update              : update ftool
 
 ------------- java --------------
 btrace              : start btrace debugger
@@ -44,7 +44,7 @@ jargrep             : grep text in jars
 
 ## 命令介绍
 - update
-> 更新 st
+> 更新 ftool
 
 #### common
 - color
@@ -140,10 +140,10 @@ Histogram:
       - 2. 提取 excel 指定列并在列值附带引号，列之间使用逗号分隔
 	- usage:
 	```
-	usage: /Users/terminus/dev/github/st/common/tools//format -s <separator> -q <quotes> -u <usecols> -i <inputfile.xlsx> -o <outputfile.csv>
+	usage: /Users/terminus/dev/github/ftool/common/tools//format -s <separator> -q <quotes> -u <usecols> -i <inputfile.xlsx> -o <outputfile.csv>
 	
 	e.g.
-	st format -i /Users/terminus/Desktop/tt.xlsx -o /Users/terminus/Desktop/tt.csv  -q -s , -c 1,2 
+	ftool format -i /Users/terminus/Desktop/tt.xlsx -o /Users/terminus/Desktop/tt.csv  -q -s , -c 1,2 
 	```
 
 
@@ -152,9 +152,9 @@ Histogram:
 - jargrep
 - gc
 ```
-Usage: st gc [OPTION] pid [<interval> [<count>]]
+Usage: ftool gc [OPTION] pid [<interval> [<count>]]
 GC相关:显示堆中各代垃圾收集统计、显示堆中各代的内存统计
-Example: st gc -util 1234 1000 10
+Example: ftool gc -util 1234 1000 10
 
 Options:
     -cause  ref: jstat -gccause; 垃圾收集统计（包含原因）;默认1秒, 10次;(interval=1000, count=10);
@@ -170,9 +170,9 @@ Options:
 
 - heap
 ```
-Usage: st heap [OPTION] pid [arg]
+Usage: ftool heap [OPTION] pid [arg]
 堆对象相关:dump heap到文件、显示jvm heap中top20的对象、显示Java堆详细信息、显示在F-steue队列等待Finalizer线程执行finalizer方法的对象
-Example: st heap -dumplive 1234
+Example: ftool heap -dumplive 1234
 
 Options:
     -dump       ref:jmap -dump:format=b,file=heap.bin pid 生成堆转储快照dump文件
@@ -185,9 +185,6 @@ Options:
     -clstats       ref:jmap -clstats; 打印类加载器信息
     -finalizerinfo ref:jmap -finalizerinfo; 显示在F-steue队列等待Finalizer线程执行finalizer方法的对象
 ```
-
-- arthas
-> 见：[arthas](https://github.com/alibaba/arthas)
 
 - highest_cpu_threads
 > Find out the highest cpu consumed threads of java, and print the stack of these threads.

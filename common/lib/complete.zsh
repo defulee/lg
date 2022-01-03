@@ -1,8 +1,8 @@
 #!/bin/zsh
-### tb zsh complete
+### zsh complete
 function zsh_complete {
 	reply=(
-	$(cat $HOME/.tb/cmds.cache|xargs echo)
+	$(cat $HOME/.ftool/cmds.cache|xargs echo)
 	)
 }
-compctl -K zsh_complete tb
+compctl -K zsh_complete ftool

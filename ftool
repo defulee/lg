@@ -1,15 +1,15 @@
 #!/bin/bash
 
-export tb_dir=$(dirname "$(echo "$0" | sed -e '')")
+export ftool_dir=$(dirname "$(echo "$0" | sed -e '')")
 
 # load rcfile
-rcfile="${tb_dir}/tbrc"
+rcfile="${ftool_dir}/ftoolrc"
 [ -r "${rcfile}" ] && source ${rcfile}
-export st_custom_rcfile="${HOME}/.tbrc"
-[ -r "${st_custom_rcfile}" ] && source ${st_custom_rcfile}
+export custom_rcfile="${HOME}/.ftoolrc"
+[ -r "${custom_rcfile}" ] && source ${custom_rcfile}
 
 # load common libs functions
-common_lib="${tb_dir}/common/lib/common-functions"
+common_lib="${ftool_dir}/common/lib/common-functions"
 [ -r "${common_lib}" ] && source ${common_lib}
 
 logo() {
@@ -25,10 +25,10 @@ logo() {
 usage() {
 cat << EOF
 $(fmt_bold USAGE)
-tb list:       show all commands
-tb command:    execute a command(such as color、stats)
-tb update:     update tb
-tb uninstall:  uninstall tb
+ftool list:       show all commands
+ftool command:    execute a command(such as color、stats)
+ftool update:     update ftool
+ftool uninstall:  uninstall ftool
 EOF
 }
 
@@ -48,7 +48,7 @@ find_commands() {
             desc=`grep '^###' ${tools_dir}/${cmd} | cut -c 4-`
             if [ "${desc}" != ""  ]; then
                 fmt_cmd "${cmd}\t:$desc"
-                echo "${cmd}" >> $HOME/.tb/cmds.cache
+                echo "${cmd}" >> $HOME/.ftool/cmds.cache
             fi
         done
         echo ''
@@ -57,19 +57,19 @@ find_commands() {
 }
 
 list() {
-    rm -f $HOME/.tb/cmds.cache 2>/dev/null
-    mkdir $HOME/.tb 2>/dev/null
+    rm -f $HOME/.ftool/cmds.cache 2>/dev/null
+    mkdir $HOME/.ftool 2>/dev/null
     echo 'Available commands:'
-    find_commands ${tb_dir}
-    find_commands ${tb_dir}/custom
+    find_commands ${ftool_dir}
+    find_commands ${ftool_dir}/custom
     exit 0;
 }
 
 uninstall() {
-    echo -n "Uninstall tb,(y)es or (n)o?"
+    echo -n "Uninstall ftool,(y)es or (n)o?"
     read choice < /dev/tty
-    if [ "${choice}" = "y" ] && [ "${tb_dir}" != "/" ];then
-	    cd ${tb_dir} && make uninstall && rm -rf ${tb_dir} && echo "tb uninstall finished. Bye~"
+    if [ "${choice}" = "y" ] && [ "${ftool_dir}" != "/" ];then
+	    cd ${ftool_dir} && make uninstall && rm -rf ${ftool_dir} && echo "ftool uninstall finished. Bye~"
     fi
     exit 0
 }
@@ -88,8 +88,8 @@ if [ "$1" = "uninstall" ]; then
     uninstall "$@"
 fi
 
-tools_dir=${tb_dir}/*/tools/
-custom_tools_dir=${tb_dir}/custom/*/tools/
+tools_dir=${ftool_dir}/*/tools/
+custom_tools_dir=${ftool_dir}/custom/*/tools/
 command_file=$1;shift
 command=`find ${tools_dir} -maxdepth 1 -name ${command_file} `
 
