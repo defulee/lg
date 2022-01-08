@@ -3,3 +3,5 @@ custom/book/tools/arthas
 *.pyc
 *.log
 *.json
+*.yml
+*.md

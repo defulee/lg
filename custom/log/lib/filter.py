@@ -2,7 +2,8 @@
 # -*- coding:utf-8 -*-
 
 import re
-from tree_data import write_head,write_end,add_records
+from tree_data import write_head, write_end, add_records
+
 
 def match_log_start(log):
     pattern = r'(^\d{4}[\D]\d{1,2}[\D]\d{1,2} \d{2}:\d{2}:\d{2}[\D]\d{3} (DEBUG|INFO|ERROR|WARN) )'
@@ -174,4 +175,3 @@ if __name__ == '__main__':
     if len(trace_logs) > 0:
         add_records(fo, trace_logs)
     write_end(fo)
-
