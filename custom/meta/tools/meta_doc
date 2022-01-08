@@ -1,5 +1,7 @@
 #!/usr/bin/python3
 # -*- coding: UTF-8 -*-
+### 自动生成模型和字典信息markdown文档
+
 import argparse
 import os
 import sys
