@@ -41,12 +41,24 @@ def query_model_meta(cursor, model):
     return cursor.fetchall()
 
 
+def query_model_fields_i18n(cursor, model):
+    sql = f"""
+        SELECT `translation`, `originalKey` 
+        FROM meta_store__i18n_model_field_meta 
+        WHERE locale = 'zh-CN' and  originalKey like '%\_{model}\_%';
+        """
+    cursor.execute(sql)
+    return cursor.fetchall()
+
+
 def persist_model_meta(cursor, model, model_field_desc, fo):
     print("persist model name:", model["name"], ",desc:", model["desc"])
     mode_meta = query_model_meta(cursor, model["name"])
     if mode_meta is None:
         print("model:", model["name"], "not found")
         return
+    # 国际化
+    model_fields_i18n = query_model_fields_i18n(cursor, model["name"])
 
     lines = []
     # 模型信息
@@ -63,12 +75,17 @@ def persist_model_meta(cursor, model, model_field_desc, fo):
     relate_meta = []
     # 数据部分
     for row in mode_meta:
-        # 处理字段描述
+        label = row[1]
+        # 国际化
+        key = model["name"] + "_" + row[0]
+        for field_i18n in model_fields_i18n:
+            if key in field_i18n[1]:
+                label = field_i18n[0]
+        # 配置文件中字段文案
         if model_field_desc is not None and row[0] in model_field_desc:
-            lines += ["| {} | {} | {} | {} | {} | {} |".format(row[0], model_field_desc[row[0]], row[2], row[3], row[4],
-                                                               row[5])]
-        else:
-            lines += ["| {} |".format(' | '.join(row))]
+            label = model_field_desc[row[0]]
+
+        lines += ["| {} | {} | {} | {} | {} | {} |".format(row[0], label, row[2], row[3], row[4], row[5])]
 
         # 收集关联模型
         if row[3] is not None and row[3] != "":

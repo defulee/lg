@@ -36,9 +36,7 @@ def get_config_data(yaml_file):
 if __name__ == "__main__":
     # 获取配置
     config_file = get_config_file()
-    # config_file = "/Users/defu/dev/github/defulee/toolbox/custom/meta/lib/config.yml"
     config_data = get_config_data(config_file)
-    print(config_data)
 
     # 连接数据库
     mysql_password = input("请输入MYSQL_PASSWORD: ")
