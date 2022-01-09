@@ -27,19 +27,24 @@ ftool uninstall:  uninstall ftool
 Available commands:
 ------------ common -------------
 color               : terminal color
+format              : 1. 提取excel文件指定列转为csv文件，使用空格分隔；2. 提取 excel 指定列并在列值附带引号，列之间使用逗号分隔
 histogram           : 统计数据出现频次，并以直方图显示
 number              : number conversion
 stats               : collect statistics of data from a file or stdin
-update              : update ftool
+update              : update tb
 
 ------------- java --------------
-btrace              : start btrace debugger
 find_in_jars        : Find file in the jar files under current directory
 gc                  : GC相关:显示堆中各代垃圾收集统计、显示堆中各代的内存统计
-greys               : Java诊断工具
-heap                : 堆对象相关:dump heap到文件、显示jvm heap中top20的对象、显示Java堆详细信息、显示在F-steue队列等待Finalizer线程执行finalizer方法的对象
+heap                : 堆对象相关:dump heap到文件、显示jvm heap中top20的对象、显示Java堆详细信息、显示在F-Queue队列等待Finalizer线程执行finalizer方法的对象
 highest_cpu_threads : Find out the highest cpu consumed threads of java, and print the stack of these threads.
 jargrep             : grep text in jars
+
+------------- book --------------
+book                : 查询下载小说
+
+------------- meta --------------
+meta_doc            : 自动生成模型和字典信息markdown文档
 ```
 
 ## 命令介绍
@@ -188,3 +193,10 @@ Options:
 
 - highest_cpu_threads
 > Find out the highest cpu consumed threads of java, and print the stack of these threads.
+> 
+
+- meta_doc
+```commandline
+Usage: ftool meta_doc -c config_file_path
+自动生成模型和字典信息markdown文档到当前文件夹下
+```
