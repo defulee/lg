@@ -4,9 +4,9 @@
 
 def query_model_meta(cursor, model):
     sql = f"""
-        select id
+        select `id`
         from meta_store__model_meta
-        where originalKey= '{model}' ;
+        where `key`= '{model}' ;
     """
 
     cursor.execute(sql)
@@ -51,18 +51,21 @@ def query_model_fields_i18n(cursor, model):
     return cursor.fetchall()
 
 
-def persist_model_meta(cursor, model, model_field_desc, fo):
-    print("persist model name:", model["name"], ",desc:", model["desc"])
-    mode_meta = query_model_meta(cursor, model["name"])
+def persist_model_meta(cursor, model_key, model_desc, model_field_desc, fo):
+    print("persist model name:", model_key, ",desc:", model_desc)
+    mode_meta = query_model_meta(cursor, model_key)
     if mode_meta is None:
-        print("model:", model["name"], "not found")
-        return
+        print("model:", model_key, "not found")
+        return []
     # 国际化
-    model_fields_i18n = query_model_fields_i18n(cursor, model["name"])
+    model_fields_i18n = query_model_fields_i18n(cursor, model_key)
 
     lines = []
     # 模型信息
-    lines += ["### " + model["desc"] + "--" + model["name"]]
+    if model_desc is None:
+        lines += ["### " + model_key]
+    else:
+        lines += ["### " + model_desc + "--" + model_key]
 
     # 列名
     cols = ["字段名称", "描述", "类型", "关联模型", "必填", "生效状态"]
@@ -77,7 +80,7 @@ def persist_model_meta(cursor, model, model_field_desc, fo):
     for row in mode_meta:
         label = row[1]
         # 国际化
-        key = model["name"] + "_" + row[0]
+        key = model_key + "_" + row[0]
         for field_i18n in model_fields_i18n:
             if key in field_i18n[1]:
                 label = field_i18n[0]
