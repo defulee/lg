@@ -32,9 +32,10 @@ def query_model_meta(cursor, model):
                                       then JSON_EXTRACT(typeMeta, '$.lookupModel')
                                   end, '"', ''), '') as 关联模型,
                if(nullable= 0, '是', '否') as 必填,
-               if(active= 0, '未生效', '生效') as 生效状态
+               if(active= 0, '未生效', '生效') as 生效状态,
+               if(persistent= 0, '否', '是') as 是否持久化
         from meta_store__model_field_meta
-        where FromModel= '{model_id}' and persistent=1
+        where FromModel= '{model_id}'
         order by `order`;
     """
     cursor.execute(sql)
@@ -68,7 +69,7 @@ def persist_model_meta(cursor, model_key, model_desc, model_field_desc, fo):
         lines += ["### " + model_desc + "--" + model_key]
 
     # 列名
-    cols = ["字段名称", "描述", "类型", "关联模型", "必填", "生效状态"]
+    cols = ["字段名称", "描述", "类型", "关联模型", "必填", "生效状态", "是否持久化"]
     lines += ["| {} |".format(' | '.join(cols))]
 
     # 分割线
@@ -88,7 +89,7 @@ def persist_model_meta(cursor, model_key, model_desc, model_field_desc, fo):
         if model_field_desc is not None and row[0] in model_field_desc:
             label = model_field_desc[row[0]]
 
-        lines += ["| {} | {} | {} | {} | {} | {} |".format(row[0], label, row[2], row[3], row[4], row[5])]
+        lines += ["| {} | {} | {} | {} | {} | {} |".format(row[0], label, row[2], row[3], row[4], row[5], row[6])]
 
         # 收集关联模型
         if row[3] is not None and row[3] != "":
