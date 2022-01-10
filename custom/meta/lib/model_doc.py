@@ -89,7 +89,7 @@ def persist_model_meta(cursor, model_key, model_desc, model_field_desc, fo):
         if model_field_desc is not None and row[0] in model_field_desc:
             label = model_field_desc[row[0]]
 
-        lines += ["| {} | {} | {} | {} | {} | {} |".format(row[0], label, row[2], row[3], row[4], row[5], row[6])]
+        lines += ["| {} | {} | {} | {} | {} | {} | {} |".format(row[0], label, row[2], row[3], row[4], row[5], row[6])]
 
         # 收集关联模型
         if row[3] is not None and row[3] != "":
