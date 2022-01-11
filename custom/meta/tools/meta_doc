@@ -38,6 +38,19 @@ if __name__ == "__main__":
     config_file = get_config_file()
     config_data = get_config_data(config_file)
 
+    if "mysql" not in config_data:
+        print("配置文件中缺少 mysql 配置")
+        sys.exit(0)
+    if "module" not in config_data:
+        print("配置文件中缺少 module 配置")
+        sys.exit(0)
+    if "models" not in config_data:
+        print("配置文件中缺少 models 节点")
+        sys.exit(0)
+    if len(config_data["models"]) == 0:
+        print("配置文件中 models 节点下列表长度为0")
+        sys.exit(0)
+
     # 连接数据库
     mysql_password = input("请输入MYSQL_PASSWORD: ")
     db = pymysql.connect(host=config_data["mysql"]["mysql_host"], port=config_data["mysql"]["mysql_port"],
@@ -50,35 +63,36 @@ if __name__ == "__main__":
     fo = open(os.getcwd() + "/meta_doc.md", "w")
 
     # 持久化模型原信息
-    module = config_data["module"] if "module" in config_data else None
+    module = config_data["module"]
+
     model_list = []
     model_desc_dict = {}
     dict_list = []
-    if len(config_data["models"]) > 0:
-        # 待处理模型
-        for model in config_data["models"]:
-            if model["name"] not in model_list:
-                model_list.append(model["name"])
-                model_desc_dict[model["name"]] = model["desc"]
+    model_field_desc = config_data["model_field_desc"] if "model_field_desc" in config_data and len(config_data["model_field_desc"]) > 0 else {}
 
-        fo.write("## 模型信息\n\n")
-        idx = 0
-        while idx < len(model_list):
-            model_key = model_list[idx]
-            model_desc = model_desc_dict[model_key] if model_key in model_desc_dict else None
+    # 待处理模型
+    for model in config_data["models"]:
+        if model["name"] not in model_list:
+            model_list.append(model["name"])
+            model_desc_dict[model["name"]] = model["desc"]
 
-            # 模型字段文案备注
-            model_field_desc = config_data["model_field_desc"]
-            field_desc = model_field_desc[model_key] if model_key in model_field_desc else None
-            relate_meta_list = persist_model_meta(cursor, model_key, model_desc, field_desc, fo)
-            for relate_meta in relate_meta_list:
-                match_module = True if module is None or relate_meta.startswith(module) else False
-                if match_module and not relate_meta.endswith("Dict") and relate_meta not in model_list:
-                    model_list.append(relate_meta)
-                if not relate_meta.startswith("ysmy_") and not relate_meta.endswith("BO") and not relate_meta.endswith("TO") and relate_meta not in dict_list:
-                    dict_list.append(relate_meta)
-            # 准备处理下一条
-            idx = idx + 1
+    fo.write("## 模型信息\n\n")
+    idx = 0
+    while idx < len(model_list):
+        model_key = model_list[idx]
+        model_desc = model_desc_dict[model_key] if model_key in model_desc_dict else None
+
+        # 模型字段文案备注
+        field_desc = model_field_desc[model_key] if model_key in model_field_desc else None
+        relate_meta_list = persist_model_meta(cursor, model_key, model_desc, field_desc, fo)
+        for relate_meta in relate_meta_list:
+            match_module = True if module is None or relate_meta.startswith(module) else False
+            if match_module and not relate_meta.endswith("Dict") and relate_meta not in model_list:
+                model_list.append(relate_meta)
+            if not relate_meta.startswith("ysmy_") and not relate_meta.endswith("BO") and not relate_meta.endswith("TO") and relate_meta not in dict_list:
+                dict_list.append(relate_meta)
+        # 准备处理下一条
+        idx = idx + 1
 
     # 持久化字典原信息
     if len(dict_list) > 0:
