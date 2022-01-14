@@ -15,19 +15,6 @@ def write_head(file_name):
 
 
 def write_end(fo):
-    empty_log = {
-        "type": "Custom",
-        "trace_id": "",
-        "span_id": "",
-        "p_span_id": "",
-        "keyword": "",
-        "cost": 0,
-        "content": "",
-        "status": "END",
-        "request": "",
-        "response": ""
-    }
-    fo.write("\t\t" + json.dumps(empty_log) + "\n")
     context = """\t],
     "count": 924,
     "is": true,
@@ -38,10 +25,22 @@ def write_end(fo):
     return fo
 
 
-def add_records(fo, logs):
-    for log in logs:
-        fo.write("\t\t" + json.dumps(log) + ",\n")
+def write_records(fo, logs, is_last_logs=False):
+    if len(logs) == 0:
+        return
+    idx = 0
+    max_idx = len(logs) - 2
+    while idx <= max_idx:
+        data_dict = logs[idx].to_dict()
+        fo.write("\t\t" + json.dumps(data_dict) + ",\n")
+        idx = idx + 1
 
+    # 写入最后一条记录
+    data_dict = logs[len(logs) - 1].to_dict()
+    if is_last_logs:
+        fo.write("\t\t" + json.dumps(data_dict) + "\n")
+    else:
+        fo.write("\t\t" + json.dumps(data_dict) + ",\n")
 
 # if __name__ == '__main__':
 #     fo = write_head("test_tree_data")

@@ -5,3 +5,4 @@ custom/book/tools/arthas
 *.json
 *.yml
 *.md
+.idea
