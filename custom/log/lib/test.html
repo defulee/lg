@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script src="http://libs.baidu.com/jquery/2.0.0/jquery.min.js"></script>
+    <script src="https://cdn.bootcdn.net/ajax/libs/jsoneditor/9.0.0/jsoneditor.min.js"></script>
+    <link href="https://cdn.bootcdn.net/ajax/libs/jsoneditor/9.0.0/jsoneditor.min.css" rel="stylesheet">
+
+    <link href="https://cdn.w3cbus.com/library/mdui/1.0.2/css/mdui.min.css" rel="stylesheet"/>
+    <script src="https://cdn.w3cbus.com/library/mdui/1.0.2/js/mdui.min.js"></script>
+
+    <link href="https://cdn.bootcdn.net/ajax/libs/jquery-treetable/3.2.0/css/jquery.treetable.min.css" rel="stylesheet">
+    <link href="https://cdn.bootcdn.net/ajax/libs/jquery-treetable/3.2.0/css/jquery.treetable.theme.default.min.css" rel="stylesheet">
+    <script src="https://cdn.bootcdn.net/ajax/libs/jquery-treetable/3.2.0/jquery.treetable.min.js"></script>
+
+    <style>
+
+        <!-- 左右分栏 start -->
+        .column {
+            overflow: hidden;
+        }
+        .column-left {
+            height: 400px;
+            background-color: #fff;
+            position: relative;
+            float: left;
+        }
+        .column-right {
+            height: 400px;
+            padding: 16px;
+            background-color: #eee;
+            box-sizing: border-box;
+            overflow: hidden;
+        }
+        .resize-left {
+            position: absolute;
+            top: 0; right: 5px; bottom: 0; left: 0;
+            padding: 16px;
+            overflow-x: hidden;
+        }
+        .resize-bar {
+            width: 200px; height: inherit;
+            resize: horizontal;
+            cursor: ew-resize;
+            cursor: col-resize;
+            opacity: 0;
+            overflow: scroll;
+        }
+        <!--/* 拖拽线 */-->
+        .resize-line {
+            position: absolute;
+            right: 0; top: 0; bottom: 0;
+            border-right: 2px solid #eee;
+            border-left: 1px solid #bbb;
+            pointer-events: none;
+        }
+        .resize-bar:hover ~ .resize-line,
+        .resize-bar:active ~ .resize-line {
+            border-left: 1px dashed skyblue;
+        }
+        .resize-bar::-webkit-scrollbar {
+            width: 200px; height: inherit;
+        }
+
+        /* Firefox只有下面一小块区域可以拉伸 */
+        @supports (-moz-user-select: none) {
+            .resize-bar:hover ~ .resize-line,
+            .resize-bar:active ~ .resize-line {
+                border-left: 1px solid #bbb;
+            }
+            .resize-bar:hover ~ .resize-line::after,
+            .resize-bar:active ~ .resize-line::after {
+                content: '';
+                position: absolute;
+                width: 16px; height: 16px;
+                bottom: 0; right: -8px;
+                background: url(./resize.svg);
+                background-size: 100% 100%;
+            }
+        }
+        <!-- 左右分栏 end -->
+
+    </style>
+</head>
+<body>
+    <div class="column">
+        <div class="column-left">
+            <div class="resize-bar"></div>
+            <div class="resize-line"></div>
+            <div class="resize-left">
+
+                <table id="treeTable1" class="table table-striped table-bordered table-hover">
+                    <thead>
+                    <tr>
+                        <th>名称</th>
+                        <th>描述</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                        <tr data-tt-id="1">
+                            <td>Parent</td>
+                            <td>Parent</td>
+                          </tr>
+                          <tr data-tt-id="2" data-tt-parent-id="1">
+                            <td>Child</td>
+                            <td>Child</td>
+                          </tr>
+                    </tbody>
+                </table>
+<!--                <div id="jsoneditor"></div>-->
+            </div>
+
+
+        </div>
+
+        <div class="mdui-divider"></div>
+
+        <div id="content-detail" class="column-right">
+            <div class="mdui-container">
+                <div class="mdui-tab" mdui-tab>
+                    <a href="#example1-tab1" class="mdui-ripple">web</a>
+                    <a href="#example1-tab2" class="mdui-ripple">shopping</a>
+                    <a href="#example1-tab3" class="mdui-ripple">images</a>
+                </div>
+                <div id="example1-tab1" class="mdui-p-a-2">
+                    web content
+                    <div id="jsoneditor"></div>
+                </div>
+                <div id="example1-tab2" class="mdui-p-a-2">shopping content</div>
+                <div id="example1-tab3" class="mdui-p-a-2">images content</div>
+            </div>
+
+        </div>
+    </div>
+
+
+    <script>
+        // create the editor
+        const container = document.getElementById("jsoneditor")
+        // 需要装载的元素需要选中
+
+        const options = {
+            // mode:"code",
+            // 模式是代码模式:可以全部编辑所有内容
+            mode:'form',
+            // 表格模式，只能修改value模式，这个正是需要的.
+            // mode:"text",
+            // mode:"view",
+            // mode:"preview",
+            // 预览模式，可以支持超大的json文本传入
+            onChange(){
+                // console.log('change')
+                // 加的钩子，装载的json发生修改之后触发的函数
+            },
+            onChangeJSON(json){
+                // 也是改变之后的，但是会有一个改变之后的json传递出来
+                console.log(json)
+            },
+            onChangeText(jsonString){
+                // console.log(jsonString)
+                // 返回一个字符串
+            },
+            // 只能是用户主动的修改才会触发，程序改变的情况下不会触发，比如set,setText,update,updateText
+            onError(error){
+                coonsole.log("发生了报错")
+            },
+            onModeChange(newMode,oldMode){
+                // 发生了更改模式立即触发的函数
+            },
+            onValidate(json){
+                var errors=[]
+                if(json&&json.params){
+                    console.log("正确")
+                }else{
+                    console.log('修改失败')
+                }
+                // 每次修改json之后应该判断一下数据结构是否是正确的
+            },
+            history:false,
+            mainMenuBar:false,
+            navigationBar:false,
+            statusBar:false,
+        }
+        // 配置参数
+
+
+        // 显示的数据
+        const initialJson = {
+            "Array": [1, 2, 3],
+            "Boolean": true,
+            "Null": null,
+            "Number": 123,
+            "Object": {"a": "b", "c": "d"},
+            "String": "Hello World"
+        }
+        const editor = new JSONEditor(container, options, initialJson)
+        // 可以自定的时候就传一份默认的进去
+
+        // editor.set(initialJson)
+        // 也可以使用这个方法后期注入
+
+        //获得修改之后的数据
+        const updatedJson = editor.get()
+        editor.expandAll()
+
+
+
+        $('#treeTable1').treetable({
+            expandLevel : 2,
+            expandable: true
+        });
+        // Highlight selected row
+        $("#example-advanced tbody").on("mousedown", "tr", function() {
+          $(".selected").not(this).removeClass("selected");
+          $(this).toggleClass("selected");
+        });
+
+    </script>
+
+</body>
+</html>
