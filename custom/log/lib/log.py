@@ -118,15 +118,15 @@ class Log:
 
     def parse_log_args(self, log_type, log):
         if log_type in self.keyword_types:
-            return str.split(log, "], args: ")[1]
+            return str.split(log, "], args: ")[1].replace("\n", "")
         else:
             return ""
 
     def parse_log_content(self, log_type, log):
         if log_type == LogType.DS:
-            return str.split(log, "executeByDB, ")[1]
+            return str.split(log, "executeByDB, ")[1].replace("\n", "")
         elif log_type == LogType.Error:
-            return str.split(log, ":")[4]
+            return str.split(log, ":")[4].replace("\n", "")
         else:
             return ""
 
@@ -142,3 +142,18 @@ class Log:
             "response": self.response,
             "content": self.content
         }
+
+    def to_tr(self):
+        return f"""
+                        <tr data-tt-id="{self.span_id}" data-tt-parent-id="{self.p_span_id}">
+                            <td>{self.type.desc()}</td>
+                            <td style="display:none">{self.trace_id}</td>
+                            <td style="display:none">{self.span_id}</td>
+                            <td>{self.keyword}</td>
+                            <td>{self.status.desc()}</td>
+                            <td style="display:none">{self.request}</td>
+                            <td style="display:none">{self.response}</td>
+                            <td style="display:none">{self.content}</td>
+                        </tr>
+        """
+

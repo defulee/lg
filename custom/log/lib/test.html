@@ -15,6 +15,8 @@
     <link href="https://cdn.bootcdn.net/ajax/libs/jquery-treetable/3.2.0/css/jquery.treetable.theme.default.min.css" rel="stylesheet">
     <script src="https://cdn.bootcdn.net/ajax/libs/jquery-treetable/3.2.0/jquery.treetable.min.js"></script>
 
+    <script src="https://cdn.bootcdn.net/ajax/libs/layui/2.6.8/layui.min.js"></script>
+
     <style>
 
         <!-- 左右分栏 start -->
@@ -91,25 +93,41 @@
             <div class="resize-line"></div>
             <div class="resize-left">
 
-                <table id="treeTable1" class="table table-striped table-bordered table-hover">
+                <table id="treeTable" class="table table-striped table-bordered table-hover">
                     <thead>
                     <tr>
-                        <th>名称</th>
-                        <th>描述</th>
+                        <th>类型</th>
+                        <th>traceId</th>
+                        <th>spanId</th>
+                        <th>关键点</th>
+                        <th>状态</th>
+                        <th>请求</th>
+                        <th>响应</th>
+                        <th>n</th>
                     </tr>
                     </thead>
                     <tbody>
+                        {{treetable_body}}
                         <tr data-tt-id="1">
-                            <td>Parent</td>
-                            <td>Parent</td>
+                            <td>类型</td>
+                            <td>traceId</td>
+                            <td>spanId</td>
+                            <td>keyword</td>
+                            <td>request</td>
+                            <td>response</td>
+                            <td>error</td>
                           </tr>
                           <tr data-tt-id="2" data-tt-parent-id="1">
-                            <td>Child</td>
-                            <td>Child</td>
+                            <td>类型</td>
+                            <td>traceId</td>
+                            <td>spanId</td>
+                            <td>keyword</td>
+                            <td>request</td>
+                            <td>response</td>
+                            <td>error</td>
                           </tr>
                     </tbody>
                 </table>
-<!--                <div id="jsoneditor"></div>-->
             </div>
 
 
@@ -207,7 +225,7 @@
 
 
 
-        $('#treeTable1').treetable({
+        $('#treeTable').treetable({
             expandLevel : 2,
             expandable: true
         });

@@ -29,8 +29,7 @@ def write_records(fo, logs, is_last_logs=False):
     if len(logs) == 0:
         return
     idx = 0
-    max_idx = len(logs) - 2
-    while idx <= max_idx:
+    while idx < len(logs):
         data_dict = logs[idx].to_dict()
         fo.write("\t\t" + json.dumps(data_dict) + ",\n")
         idx = idx + 1
@@ -42,6 +41,30 @@ def write_records(fo, logs, is_last_logs=False):
     else:
         fo.write("\t\t" + json.dumps(data_dict) + ",\n")
 
-# if __name__ == '__main__':
-#     fo = write_head("test_tree_data")
-#     write_end(fo)
+
+def write_html(file, logs):
+    """
+     将替换的字符串写到一个新的文件中，然后将原文件删除，新文件改为原来文件的名字
+     :param file: 文件路径
+     :param logs: 待写入logs
+     :return: None
+     """
+    template_file = os.path.dirname(__file__) + "/template.html"
+
+    treetable_body = ""
+    if len(logs) == 0:
+        return
+    for idx in range(len(logs)):
+        data_tr = logs[idx].to_tr()
+        treetable_body = treetable_body + data_tr
+
+    with open(template_file, "r", encoding="utf-8") as f1, open(file, "w", encoding="utf-8") as f2:
+        for line in f1:
+            if "{{treetable_body}}" in line:
+                line = line.replace("{{treetable_body}}", treetable_body)
+            f2.write(line)
+
+
+if __name__ == '__main__':
+    print(os.path.dirname(__file__))
+    print(__file__)

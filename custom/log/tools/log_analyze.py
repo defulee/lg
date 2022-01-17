@@ -1,12 +1,21 @@
 #!/usr/bin/env python3
 # -*- coding:utf-8 -*-
 ### 日志格式化解析工具
-
+import argparse
 import re
 
 from custom.log.lib.filter import Filter
 from custom.log.lib.log import LogType, Log, LogStatus
-from custom.log.lib.tree_data import write_head, write_end, write_records
+from custom.log.lib.tree_data import write_html
+
+
+def get_args():
+    parser = argparse.ArgumentParser()
+    parser.description = '参数解析'
+    parser.add_argument('-t', '--trace_id', required=True, help='traceId')
+    parser.add_argument('-f', '--file', required=True, help='log file')
+    args = parser.parse_args()
+    return args.file, args.trace_id
 
 
 def match_log_start(log):
@@ -22,6 +31,10 @@ def match_log(log_type, keyword):
 
 
 if __name__ == '__main__':
+    log_file, trace_id = get_args()
+    # log_file = "/Users/defu/Downloads/test.log"
+    # trace_id = "f950df6af0ad3adfbcb9613a83cf1f8d"
+
     trace_logs = []
     last_log = None
 
@@ -70,7 +83,5 @@ if __name__ == '__main__':
             # 原log，新行，如 error log
             last_log.content = last_log.content + line + "\n"
 
-    fo = write_head("test_tree_data")
     if len(trace_logs) > 0:
-        write_records(fo, trace_logs, True)
-    write_end(fo)
+        write_html("index.html", trace_logs)
