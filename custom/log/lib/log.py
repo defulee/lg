@@ -138,9 +138,9 @@ class Log:
             "p_span_id": self.p_span_id,
             "keyword": self.keyword,
             "status": self.status.desc(),
-            "request": self.request,
-            "response": self.response,
-            "content": self.content
+            # "request": self.request,
+            # "response": self.response,
+            # "content": self.content
         }
 
     def to_tr(self):

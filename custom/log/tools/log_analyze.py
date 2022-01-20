@@ -38,14 +38,16 @@ if __name__ == '__main__':
     trace_logs = []
     last_log = None
 
-    log_filter = Filter("/Users/defu/Downloads/test.log",
-                        "f950df6af0ad3adfbcb9613a83cf1f8d")
+    log_filter = Filter(log_file, trace_id)
     log_filter.filter()
     for line in log_filter.lines:
         is_new_log = match_log_start(line)
         if is_new_log:
             # 新 log 行
             log = Log(line, "")
+            if log.keyword == "":
+                continue
+            print(log.to_dict())
             if log.type == LogType.Unknown:
                 continue
             if last_log is None:
@@ -73,6 +75,7 @@ if __name__ == '__main__':
                         idx = match_log(log.type, log.keyword)
                         if idx is not None:
                             trace_logs[idx].response = log.response
+                            last_log = trace_logs[idx]
                 else:
                     # 进入兄弟节点：当前节点status为End，新节点和当前节点span_id相同
                     print("进入兄弟节点")
