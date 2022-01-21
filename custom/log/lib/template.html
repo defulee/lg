@@ -17,22 +17,25 @@
 
     <style>
 
-        <!-- 左右分栏 start -->
+         <!-- 左右分栏 start -->
         .column {
             overflow: hidden;
+            display: flex;
+            flex-direction: row;
         }
         .column-left {
-            height: 1000px;
+            height: 100vh;
             background-color: #fff;
             position: relative;
             float: left;
         }
         .column-right {
-            height: 1000px;
-            padding: 16px;
+            height: 100vh;
             background-color: #eee;
             box-sizing: border-box;
-            overflow: hidden;
+            overflow-x: hidden;
+            position: relative;
+            display: flex;
         }
         .resize-left {
             position: absolute;
@@ -65,6 +68,26 @@
         }
         <!-- 左右分栏 end -->
 
+
+        .mdui-tab-custom {
+            position: fixed;
+            height: 48px;
+            width: 100%;
+            z-index: 10;
+            background-color: #eee;
+        }
+
+        .mdui-container {
+            flex: 2 1 auto;
+            display: flex;
+            flex-direction: column;
+        }
+        .tabs-container {
+            position: relative;
+            height: 100%;
+            border: 1px solid black;
+            flex: 2 1 auto;
+        }
     </style>
 </head>
 <body>
@@ -81,6 +104,7 @@
                         <th style="display:none">traceId</th>
                         <th style="display:none">spanId</th>
                         <th>关键点</th>
+                        <th>耗时</th>
                         <th>状态</th>
                         <th style="display:none">请求</th>
                         <th style="display:none">响应</th>
@@ -100,18 +124,18 @@
 
         <div id="content-detail" class="column-right">
             <div class="mdui-container">
-                <div class="mdui-tab" mdui-tab>
+                <div class="mdui-tab mdui-tab-custom" mdui-tab>
                     <a href="#tab-request" class="mdui-ripple">请求</a>
                     <a href="#tab-response" class="mdui-ripple">响应</a>
                     <a href="#tab-content" class="mdui-ripple">其他</a>
                 </div>
-                <div id="tab-request" class="mdui-p-a-2">
+
+                <div id="tab-request" class="mdui-p-a-2 tab-content">
                     <div id="req-jsonEditor"></div>
                 </div>
-                <div id="tab-response" class="mdui-p-a-2">
+                <div id="tab-response" class="mdui-p-a-2 tab-content">
                     <div id="resp-jsonEditor"></div></div>
-                <div id="tab-content" class="mdui-p-a-2">
-                </div>
+                <div id="tab-content" class="mdui-p-a-2 tab-content"></div>
             </div>
 
         </div>
@@ -119,12 +143,18 @@
 
 
     <script>
+        $('#treeTable').treetable({
+            expandLevel : 2,
+            expandable: true
+        });
+
         // create the jsonEditor
         const reqJsonContainer = document.getElementById("req-jsonEditor")
         const respJsonContainer = document.getElementById("resp-jsonEditor")
 
         // 配置参数
         const options = {
+            modes: ['text', 'code', 'tree', 'form', 'view'],
             mode:"view",
             // 只能是用户主动的修改才会触发，程序改变的情况下不会触发，比如set,setText,update,updateText
             onError(error){
@@ -141,22 +171,18 @@
             },
             history:false,
             mainMenuBar:true,
-            navigationBar:false,
+            navigationBar:true,
             statusBar:false,
         }
         const reqJsonEditor = new JSONEditor(reqJsonContainer, options)
         const respJsonEditor = new JSONEditor(respJsonContainer, options)
 
-        $('#treeTable').treetable({
-            expandLevel : 2,
-            expandable: true
-        });
         // Highlight selected row
         $("#treeTable tbody").on("mousedown", "tr", function() {
             $(".selected").not(this).removeClass("selected");
             $(this).toggleClass("selected");
 
-            const req = this.children[5].innerText
+            const req = this.children[6].innerText
             if (req != '') {
                 jsonData = JSON.parse(req);
                 reqJsonEditor.set(jsonData)
@@ -165,8 +191,7 @@
             }
             reqJsonEditor.expandAll()
 
-            const resp = this.children[6].innerText
-            debugger
+            const resp = this.children[7].innerText
             if (resp != '') {
                 jsonData = JSON.parse(resp);
                 respJsonEditor.set(jsonData)
@@ -176,7 +201,7 @@
             respJsonEditor.expandAll()
 
             const tabContent = document.getElementById("tab-content")
-            tabContent.innerText = this.children[7].innerText
+            tabContent.innerText = this.children[8].innerText
 
             const traceId = document.getElementById("traceId")
             traceId.innerText = 'traceId: ' + this.children[1].innerText + ', spanId: ' + this.children[2].innerText

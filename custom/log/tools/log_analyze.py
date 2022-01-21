@@ -25,7 +25,7 @@ def match_log_start(log):
 
 def match_log(log_type, keyword):
     for idx in range(len(trace_logs) - 1, -1, -1):
-        if trace_logs[idx].type == log_type and trace_logs[idx].keyword == keyword:
+        if trace_logs[idx].type == log_type and trace_logs[idx].keyword == keyword and trace_logs[idx].status == LogStatus.Start:
             return idx
     return None
 
@@ -55,12 +55,13 @@ if __name__ == '__main__':
                 last_log = log
                 trace_logs.append(last_log)
             else:
-                log = Log(line, "")
-                # 新span有三种可能性：1. 进入孩子节点；2. 进入兄弟节点；3. 回到父亲节点
-                # 1. 进入孩子节点: 当前节点status未到End
-                # 2. 进入兄弟节点：当前节点status为End，新节点和当前节点span_id相同
-                # 3. 回到父亲节点：当前节点status为End，新节点和当前节点span_id不同
-                if log.span_id != last_log.span_id:
+                if log.type == LogType.CostTime:
+                    last_log.cost = log.cost
+                elif log.span_id != last_log.span_id:
+                    # 新span有三种可能性：1. 进入孩子节点；2. 进入兄弟节点；3. 回到父亲节点
+                    # 1. 进入孩子节点: 当前节点status未到End
+                    # 2. 进入兄弟节点：当前节点status为End，新节点和当前节点span_id相同
+                    # 3. 回到父亲节点：当前节点status为End，新节点和当前节点span_id不同
                     if last_log.status != LogStatus.End:
                         # 进入孩子节点: 当前节点status未到End
                         print("进入孩子节点")
@@ -72,19 +73,33 @@ if __name__ == '__main__':
                         # 当前节点是上一个节点的父节点
                         print("回到父亲节点")
                         last_log.p_span_id = log.span_id
-                        idx = match_log(log.type, log.keyword)
+                        idx = match_log(log_type=log.type, keyword=log.keyword)
                         if idx is not None:
-                            trace_logs[idx].response = log.response
                             last_log = trace_logs[idx]
+                            last_log.response = log.response
+                            last_log.status = log.status
                 else:
                     # 进入兄弟节点：当前节点status为End，新节点和当前节点span_id相同
                     print("进入兄弟节点")
                     log.p_span_id = last_log.p_span_id
                     last_log = log
-                    trace_logs.append(last_log)
+                    if log.status == LogStatus.End:
+                        idx = match_log(log.type, log.keyword)
+                        if idx is not None:
+                            last_log = trace_logs[idx]
+                            last_log.response = log.response
+                            last_log.status = LogStatus.End
+                        else:
+                            trace_logs.append(last_log)
+                    else:
+                        trace_logs.append(last_log)
         elif last_log.type == LogType.Error:
             # 原log，新行，如 error log
             last_log.content = last_log.content + line + "\n"
 
     if len(trace_logs) > 0:
+        # print("="*20)
+        # for log in trace_logs:
+        #     print(log.to_dict())
+
         write_html("index.html", trace_logs)

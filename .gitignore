@@ -6,4 +6,4 @@ custom/book/tools/arthas
 *.yml
 *.md
 .idea
-custom/log/tools/index.html
+custom/log/tools/index*.html
