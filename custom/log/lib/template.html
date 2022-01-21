@@ -44,7 +44,7 @@
             overflow-x: hidden;
         }
         .resize-bar {
-            width: 200px; height: inherit;
+            width: 800px; height: inherit;
             resize: horizontal;
             cursor: ew-resize;
             cursor: col-resize;
@@ -55,8 +55,8 @@
         .resize-line {
             position: absolute;
             right: 0; top: 0; bottom: 0;
-            border-right: 2px solid #eee;
-            border-left: 1px solid #bbb;
+            border-right: 5px solid #eee;
+            border-left: 2px solid #bbb;
             pointer-events: none;
         }
         .resize-bar:hover ~ .resize-line,
@@ -203,8 +203,8 @@
             const tabContent = document.getElementById("tab-content")
             tabContent.innerText = this.children[8].innerText
 
-            const traceId = document.getElementById("traceId")
-            traceId.innerText = 'traceId: ' + this.children[1].innerText + ', spanId: ' + this.children[2].innerText
+            // const traceId = document.getElementById("traceId")
+            // traceId.innerText = 'traceId: ' + this.children[1].innerText + ', spanId: ' + this.children[2].innerText
 
         });
     </script>
