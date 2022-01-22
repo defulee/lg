@@ -76,7 +76,7 @@ def is_error_log(log):
 
 
 def parse_log_content(log):
-    return str.split(log, ": ")[1]
+    return log
 
 
 def parse_log_type(log):
