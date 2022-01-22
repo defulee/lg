@@ -65,14 +65,13 @@ if __name__ == '__main__':
                     if last_log.status != LogStatus.End:
                         # 进入孩子节点: 当前节点status未到End
                         print("进入孩子节点")
-                        log.p_span_id = last_log.span_id
+                        log.pid = last_log.id
                         last_log = log
                         trace_logs.append(last_log)
                     else:
                         # 回到父亲节点：当前节点status为End，新节点和当前节点span_id不同
                         # 当前节点是上一个节点的父节点
                         print("回到父亲节点")
-                        last_log.p_span_id = log.span_id
                         idx = match_log(log_type=log.type, keyword=log.keyword)
                         if idx is not None:
                             last_log = trace_logs[idx]
@@ -81,7 +80,7 @@ if __name__ == '__main__':
                 else:
                     # 进入兄弟节点：当前节点status为End，新节点和当前节点span_id相同
                     print("进入兄弟节点")
-                    log.p_span_id = last_log.p_span_id
+                    log.pid = last_log.pid
                     last_log = log
                     if log.status == LogStatus.End:
                         idx = match_log(log.type, log.keyword)

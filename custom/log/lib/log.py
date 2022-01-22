@@ -107,6 +107,7 @@ def parse_log_type(log):
 class Log:
     """日志"""
     keyword_types = [LogType.LogicFlow, LogType.LogicFunction, LogType.ExtensionPoint]
+    next_id = 1
 
     def __init__(self, line, p_span_id):
         log_type, status = parse_log_type(line)
@@ -114,12 +115,15 @@ class Log:
         self.trace_id = parse_trace_id(line)
         self.span_id = parse_span_id(line)
         self.p_span_id = p_span_id
+        self.id = Log.next_id
+        self.pid = None
         self.keyword = self.parse_log_keyword(log_type, line)
         self.status = status
         self.request = self.parse_log_args(log_type, line) if status == LogStatus.Start else ""
         self.response = self.parse_log_args(log_type, line) if status == LogStatus.End else ""
         self.content = parse_log_content(log_type, line)
         self.cost = self.parse_cost_time(log_type, line)
+        Log.next_id = Log.next_id + 1
 
     def parse_log_keyword(self, log_type, log):
         if log_type in self.keyword_types:
@@ -168,7 +172,7 @@ class Log:
 
     def to_tr(self):
         return f"""
-                        <tr data-tt-id="{self.span_id}" data-tt-parent-id="{self.p_span_id}">
+                        <tr data-tt-id="{self.id}" data-tt-parent-id="{self.pid}">
                             <td>{self.type.desc()}</td>
                             <td style="display:none">{self.trace_id}</td>
                             <td style="display:none">{self.span_id}</td>
