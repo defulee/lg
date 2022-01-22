@@ -32,6 +32,7 @@ def match_log(log_type, keyword):
 
 if __name__ == '__main__':
     log_file, trace_id = get_args()
+    # -f /Users/defu/Downloads/90a57f7ad8f9a8579a1fccc8ce638377693510f4522f7a09e323f9c035a83ca0-1642661220419000000-1642661400419000000.log -t 6a008032fd10c17586795e2e18f4cfb8
     # log_file = "/Users/defu/Downloads/test.log"
     # trace_id = "f950df6af0ad3adfbcb9613a83cf1f8d"
 
@@ -44,7 +45,7 @@ if __name__ == '__main__':
         is_new_log = match_log_start(line)
         if is_new_log:
             # 新 log 行
-            log = Log(line, "")
+            log = Log(line)
             if log.keyword == "":
                 continue
             print(log.to_dict())
@@ -77,6 +78,7 @@ if __name__ == '__main__':
                             last_log = trace_logs[idx]
                             last_log.response = log.response
                             last_log.status = log.status
+                            last_log.end_time = log.end_time
                 else:
                     # 进入兄弟节点：当前节点status为End，新节点和当前节点span_id相同
                     print("进入兄弟节点")
@@ -88,6 +90,7 @@ if __name__ == '__main__':
                             last_log = trace_logs[idx]
                             last_log.response = log.response
                             last_log.status = LogStatus.End
+                            last_log.end_time = log.end_time
                         else:
                             trace_logs.append(last_log)
                     else:

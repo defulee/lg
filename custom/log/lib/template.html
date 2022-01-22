@@ -51,7 +51,6 @@
             opacity: 0;
             overflow: scroll;
         }
-        <!--/* 拖拽线 */-->
         .resize-line {
             position: absolute;
             right: 0; top: 0; bottom: 0;
@@ -61,7 +60,7 @@
         }
         .resize-bar:hover ~ .resize-line,
         .resize-bar:active ~ .resize-line {
-            border-left: 1px dashed skyblue;
+            border-left: 2px solid skyblue;
         }
         .resize-bar::-webkit-scrollbar {
             width: 200px; height: inherit;
@@ -103,15 +102,17 @@
                 <table id="treeTable" class="table table-striped table-bordered table-hover">
                     <thead>
                     <tr>
-                        <th>类型</th>
-                        <th style="display:none">traceId</th>
-                        <th style="display:none">spanId</th>
                         <th>关键点</th>
                         <th>耗时</th>
+                        <th>开始时间</th>
+                        <th>结束时间</th>
                         <th>状态</th>
                         <th style="display:none">请求</th>
                         <th style="display:none">响应</th>
                         <th style="display:none">其他</th>
+                        <th style="display:none">类型</th>
+                        <th style="display:none">traceId</th>
+                        <th style="display:none">spanId</th>
                     </tr>
                     </thead>
                     <tbody>
@@ -185,7 +186,7 @@
             $(".selected").not(this).removeClass("selected");
             $(this).toggleClass("selected");
 
-            const req = this.children[6].innerText
+            const req = this.children[5].innerText
             if (req != '') {
                 jsonData = JSON.parse(req);
                 reqJsonEditor.set(jsonData)
@@ -194,7 +195,7 @@
             }
             reqJsonEditor.expandAll()
 
-            const resp = this.children[7].innerText
+            const resp = this.children[6].innerText
             if (resp != '') {
                 jsonData = JSON.parse(resp);
                 respJsonEditor.set(jsonData)
@@ -204,7 +205,7 @@
             respJsonEditor.expandAll()
 
             const tabContent = document.getElementById("tab-content")
-            tabContent.innerText = this.children[8].innerText
+            tabContent.innerText = this.children[7].innerText
 
             // const traceId = document.getElementById("traceId")
             // traceId.innerText = 'traceId: ' + this.children[1].innerText + ', spanId: ' + this.children[2].innerText
