@@ -2,7 +2,9 @@
 # -*- coding:utf-8 -*-
 ### 日志格式化解析工具
 import argparse
+import os
 import re
+import subprocess
 
 from custom.log.lib.filter import Filter
 from custom.log.lib.log import LogType, Log, LogStatus
@@ -97,8 +99,7 @@ if __name__ == '__main__':
             last_log.content = last_log.content + line + "\n"
 
     if len(trace_logs) > 0:
-        # print("="*20)
-        # for log in trace_logs:
-        #     print(log.to_dict())
-
-        write_html("index.html", trace_logs)
+        target_file = log_file.replace(".log", ".html")
+        print("解析后文件：", target_file)
+        write_html(target_file, trace_logs)
+        subprocess.call(["open", target_file])
