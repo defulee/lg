@@ -36,6 +36,7 @@ def match_log(log_type, keyword):
 if __name__ == '__main__':
     log_file, trace_id = get_args()
     # -f /Users/defu/Downloads/90a57f7ad8f9a8579a1fccc8ce638377693510f4522f7a09e323f9c035a83ca0-1642661220419000000-1642661400419000000.log -t 6a008032fd10c17586795e2e18f4cfb8
+    # -t 0629ba51-81e4-4580-97c0-471bb7885e3e -f /Users/defu/Downloads/38164a7542a66ea7aad78f7f229c4d8b37bed0b1ad9f6565d216f238deae866c-1642581300032000000-1642581480032000000.log
     # log_file = "/Users/defu/Downloads/test.log"
     # trace_id = "f950df6af0ad3adfbcb9613a83cf1f8d"
 
