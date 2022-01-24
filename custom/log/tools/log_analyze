@@ -56,11 +56,11 @@ if __name__ == '__main__':
             log = Log(line)
             if log.keyword == "":
                 continue
-            print(log.to_dict())
+            # print(log.to_dict())
             if log.type == LogType.Unknown:
                 continue
             if last_log is None:
-                print("新请求")
+                # print("新请求")
                 last_log = log
                 trace_logs.append(last_log)
             else:
@@ -73,14 +73,14 @@ if __name__ == '__main__':
                     # 3. 回到父亲节点：当前节点status为End，新节点和当前节点span_id不同
                     if last_log.status != LogStatus.End:
                         # 进入孩子节点: 当前节点status未到End
-                        print("进入孩子节点")
+                        # print("进入孩子节点")
                         log.pid = last_log.id
                         last_log = log
                         trace_logs.append(last_log)
                     else:
                         # 回到父亲节点：当前节点status为End，新节点和当前节点span_id不同
                         # 当前节点是上一个节点的父节点
-                        print("回到父亲节点")
+                        # print("回到父亲节点")
                         idx = match_log(log_type=log.type, keyword=log.keyword)
                         if idx is not None:
                             last_log = trace_logs[idx]
@@ -89,7 +89,7 @@ if __name__ == '__main__':
                             last_log.end_time = log.end_time
                 else:
                     # 进入兄弟节点：当前节点status为End，新节点和当前节点span_id相同
-                    print("进入兄弟节点")
+                    # print("进入兄弟节点")
                     log.pid = last_log.pid
                     last_log = log
                     if log.status == LogStatus.End:
@@ -109,6 +109,6 @@ if __name__ == '__main__':
 
     if len(trace_logs) > 0:
         target_file = log_file.replace(".log", ".html")
-        print("解析后文件：", target_file)
+        print("解析完成! 解析后文件：", target_file)
         write_html(target_file, trace_logs)
         subprocess.call(["open", target_file])
