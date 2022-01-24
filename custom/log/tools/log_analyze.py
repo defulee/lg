@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 # -*- coding:utf-8 -*-
 ### 日志格式化解析工具
+
 import argparse
-import os
 import re
 import subprocess
 
@@ -27,7 +27,8 @@ def match_log_start(log):
 
 def match_log(log_type, keyword):
     for idx in range(len(trace_logs) - 1, -1, -1):
-        if trace_logs[idx].type == log_type and trace_logs[idx].keyword == keyword and trace_logs[idx].status == LogStatus.Start:
+        if trace_logs[idx].type == log_type and trace_logs[idx].keyword == keyword and trace_logs[
+            idx].status == LogStatus.Start:
             return idx
     return None
 
@@ -97,7 +98,7 @@ if __name__ == '__main__':
                             trace_logs.append(last_log)
                     else:
                         trace_logs.append(last_log)
-        elif last_log.type == LogType.Error:
+        elif last_log.type == LogType.Error or last_log.type == LogType.Warn or last_log.type == LogType.Custom:
             # 原log，新行，如 error log
             last_log.content = last_log.content + line + "\n"
 

@@ -16,6 +16,7 @@ class LogType(Enum):
     Cache = "Cache"
     Warn = "Warn"
     Error = "Error"
+    Custom = "Custom"
     Unknown = "Unknown"
 
     def desc(self):
@@ -37,6 +38,8 @@ class LogType(Enum):
             return "Warn"
         elif self == LogType.Error:
             return "Error"
+        elif self == LogType.Custom:
+            return "Custom"
         elif self == LogType.Unknown:
             return "Unknown"
 
@@ -75,6 +78,14 @@ def is_error_log(log):
     return re.search(pattern, log)
 
 
+def is_custom_log(log):
+    # 2022-01-20 14:47:39.623 INFO  [oms-runtime,6a008032fd10c17586795e2e18f4cfb8,c01c1c0c-acab-4f9e-9bcd-c4749c7a1066] - [http-nio-8080-exec-5] i.t.furniture.trade.utils.TimeWatch     : [TimeWatch '客审保存]' running time = 1141 ms
+    # 2022-01-20 14:47:48.961 INFO  [oms-runtime,b3097e90c4878ff10b4741ff22c88acb,5afa9c5a-efdf-4608-88a9-613910f1c45a] - [http-nio-8080-exec-9] i.t.furniture.trade.utils.TimeWatch     : [TimeWatch-Step]: 查询组合订单; 合并订单:HB2022012000002200
+    # 2022-01-20 14:47:48.988 INFO  [oms-runtime,b3097e90c4878ff10b4741ff22c88acb,469901db-bece-4d14-a07f-d1fad66ec47a] - [http-nio-8080-exec-9] .f.o.a.BuildChangeTradeOrderLineFuncImpl: [客审保存]- 更新商品行，toOccupyLineList:null | toCancelLineList:[566112]
+    content = str.split(log, ": ")[1]
+    return re.search(r'^\[.*\]', content, re.I | re.M) or content.startswith("TimeWatch-Step")
+
+
 def parse_log_content(log):
     return log
 
@@ -104,6 +115,8 @@ def parse_log_type(log):
         return LogType.Warn, LogStatus.End
     elif is_error_log(log):
         return LogType.Error, LogStatus.End
+    elif is_custom_log(log):
+        return LogType.Custom, LogStatus.End
     else:
         return LogType.Unknown, LogStatus.End
 
@@ -161,6 +174,12 @@ class Log:
         elif log_type == LogType.CostTime:
             pattern = r'(\[|\]|,)'
             return re.sub(pattern, "", str.split(log, " ")[18])
+        elif log_type == LogType.Custom:
+            # 2022-01-20 14:47:48.961 INFO  [oms-runtime,b3097e90c4878ff10b4741ff22c88acb,5afa9c5a-efdf-4608-88a9-613910f1c45a] - [http-nio-8080-exec-9] i.t.furniture.trade.utils.TimeWatch     : [TimeWatch-Step]: 查询组合订单; 合并订单:HB2022012000002200
+            keyword_1 = str.split(log, ": ")[1]
+            keyword_split = str.split(log, keyword_1)
+            keyword_2 = keyword_split[1] if len(keyword_split) > 1 else ""
+            return keyword_1 + keyword_2
         else:
             return ""
 
