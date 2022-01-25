@@ -43,6 +43,9 @@ jargrep             : grep text in jars
 ------------- book --------------
 book                : 查询下载小说
 
+-------------- log --------------
+log_analyze         : 日志格式化解析工具
+
 ------------- meta --------------
 meta_doc            : 自动生成模型和字典信息markdown文档
 ```
@@ -199,4 +202,12 @@ Options:
 ```commandline
 Usage: ftool meta_doc -c config_file_path
 自动生成模型和字典信息markdown文档到当前文件夹下
+```
+
+- log_analyze
+```
+ftool log_analyze -t trace_id -f log_file_path
+```
+![image](https://user-images.githubusercontent.com/14255942/150927238-236f316f-6981-4afb-bbff-cdd2935cd4b4.png)
+
 ```
