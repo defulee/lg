@@ -176,10 +176,9 @@ class Log:
             return re.sub(pattern, "", str.split(log, " ")[18])
         elif log_type == LogType.Custom:
             # 2022-01-20 14:47:48.961 INFO  [oms-runtime,b3097e90c4878ff10b4741ff22c88acb,5afa9c5a-efdf-4608-88a9-613910f1c45a] - [http-nio-8080-exec-9] i.t.furniture.trade.utils.TimeWatch     : [TimeWatch-Step]: 查询组合订单; 合并订单:HB2022012000002200
-            keyword_1 = str.split(log, ": ")[1]
-            keyword_split = str.split(log, keyword_1)
-            keyword_2 = keyword_split[1] if len(keyword_split) > 1 else ""
-            return keyword_1 + keyword_2
+            keyword = str.split(log, ": ", 1)[1]
+            match = re.findall(r"\{.*(?=\})\}", keyword)
+            return keyword[0:keyword.index(match[0])] if match else keyword
         else:
             return ""
 
@@ -188,6 +187,9 @@ class Log:
             return str.split(log, "], args: ")[1].replace("\n", "")
         elif log_type == LogType.ES:
             return str.split(str.split(log, ", dsl=")[1], ", reqId=")[0]
+        elif log_type == LogType.Custom:
+            match = re.findall(r"\{.*(?=\})\}", log)
+            return match[0] if match else log
         else:
             return ""
 
