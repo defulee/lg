@@ -1,13 +1,13 @@
 #!/bin/bash
 ### update tb
 
-echo "update st ..."
+echo "update toolbox ..."
 cd ${tb_dir} && git pull
 for folder in `ls -l ${tb_dir}/custom | grep ^d | awk '{print $9}'` ;do
     if [ ! -d ${tb_dir}/custom/${folder}/tools ]; then
     continue;
     fi
-    echo "update st/custom/${folder} ..."
+    echo "update ftool/custom/${folder} ..."
     cd ${tb_dir}/custom/${folder} && git pull | grep 'file changed' &> /dev/null && wtool configure "."
 done
 

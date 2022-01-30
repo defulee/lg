@@ -170,10 +170,10 @@ class Log:
             model = str.split(str.split(log, ",\"index\":\"")[1], "\",")[0]
             return "[ES] index: " + model
         elif log_type in [LogType.Warn, LogType.Error, LogType.Custom]:
-            keyword_1 = str.split(log, ": ")[1]
-            keyword_split = str.split(log, keyword_1)
-            keyword_2 = keyword_split[1] if len(keyword_split) > 1 else ""
-            return '[' + log_type.desc() + '] ' + keyword_1 + keyword_2
+            # 2022-01-20 14:47:48.961 INFO  [oms-runtime,b3097e90c4878ff10b4741ff22c88acb,5afa9c5a-efdf-4608-88a9-613910f1c45a] - [http-nio-8080-exec-9] i.t.furniture.trade.utils.TimeWatch     : [TimeWatch-Step]: 查询组合订单; 合并订单:HB2022012000002200
+            keyword = str.split(log, ": ", 1)[1]
+            match = re.findall(r"\{.*(?=\})\}", keyword)
+            return '[' + log_type.desc() + '] ' + keyword[0:keyword.index(match[0])] if match else keyword
         elif log_type == LogType.CostTime:
             pattern = r'(\[|\]|,)'
             return re.sub(pattern, "", str.split(log, " ")[18])
