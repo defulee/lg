@@ -37,6 +37,13 @@ def match_log(log_type, keyword):
     return None
 
 
+def match_log_by_span(span_id):
+    for idx in range(len(trace_logs) - 1, -1, -1):
+        if trace_logs[idx].span_id == span_id:
+            return idx
+    return None
+
+
 if __name__ == '__main__':
     log_file, trace_id = get_args()
     # -f /Users/defu/Downloads/90a57f7ad8f9a8579a1fccc8ce638377693510f4522f7a09e323f9c035a83ca0-1642661220419000000-1642661400419000000.log -t 6a008032fd10c17586795e2e18f4cfb8
@@ -87,6 +94,13 @@ if __name__ == '__main__':
                             last_log.response = log.response
                             last_log.status = log.status
                             last_log.end_time = log.end_time
+                        else:
+                            idx = match_log_by_span(log.span_id)
+                            if idx is not None:
+                                last_log = trace_logs[idx]
+                                log.pid = last_log.id
+                                last_log = log
+                                trace_logs.append(last_log)
                 else:
                     # 进入兄弟节点：当前节点status为End，新节点和当前节点span_id相同
                     # print("进入兄弟节点")
