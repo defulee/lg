@@ -98,7 +98,7 @@ if __name__ == '__main__':
                             idx = match_log_by_span(log.span_id)
                             if idx is not None:
                                 last_log = trace_logs[idx]
-                                log.pid = last_log.id
+                                log.pid = last_log.pid
                                 last_log = log
                                 trace_logs.append(last_log)
                 else:

@@ -185,6 +185,12 @@ class Log:
             return str.split(log, "], args: ")[1].replace("\n", "")
         elif log_type == LogType.ES:
             return str.split(str.split(log, ", dsl=")[1], ", reqId=")[0]
+        elif log_type == LogType.Custom:
+            match = re.findall(r"\{.*(?=\})\}", log)
+            return match[0] if match else log
+        elif log_type == LogType.Error or log_type == LogType.Warn:
+            match = re.findall(r"\{.*(?=\})\}", log)
+            return match[0] if match else None
         else:
             return ""
 

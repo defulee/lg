@@ -7,4 +7,5 @@ custom/book/tools/arthas
 *.md
 .idea
 *.iml
+*.xml
 custom/log/tools/index*.html
