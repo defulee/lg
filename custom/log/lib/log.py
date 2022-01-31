@@ -7,6 +7,7 @@ from enum import Enum
 
 class LogType(Enum):
     """日志类型"""
+    Trigger = "Trigger"
     LogicFlow = "LogicFlow"
     LogicFunction = "LogicFunction"
     ExtensionPoint = "ExtensionPoint"
@@ -20,7 +21,9 @@ class LogType(Enum):
     Unknown = "Unknown"
 
     def desc(self):
-        if self == LogType.LogicFlow:
+        if self == LogType.Trigger:
+            return "Trigger"
+        elif self == LogType.LogicFlow:
             return "Flow"
         elif self == LogType.LogicFunction:
             return "Function"
@@ -91,9 +94,13 @@ def parse_log_content(log):
 
 
 def parse_log_type(log):
-    if "Start execute [LogicFlow] impl" in log:
+    if "starting trigger: " in log:
+        return LogType.Trigger, LogStatus.Start
+    elif "finished trigger: " in log:
+        return LogType.Trigger, LogStatus.End
+    elif "Start execute [LogicFlow] impl" in log:
         return LogType.LogicFlow, LogStatus.Start
-    if "End execute [LogicFlow] impl" in log:
+    elif "End execute [LogicFlow] impl" in log:
         return LogType.LogicFlow, LogStatus.End
     elif "Start execute [LogicFunction] impl" in log:
         return LogType.LogicFunction, LogStatus.Start
@@ -144,7 +151,10 @@ class Log:
         Log.next_id = Log.next_id + 1
 
     def parse_log_keyword(self, log_type, log):
-        if log_type in self.keyword_types:
+        if log_type == LogType.Trigger:
+            trigger = str.split(str.split(log, " trigger: ")[1], " ")[0].replace("`", "")
+            return "[Trigger] " + trigger
+        elif log_type in self.keyword_types:
             pattern = r'(\[|\]|,)'
             return '[' + log_type.desc() + '] ' + re.sub(pattern, "", str.split(log, " ")[17])
         elif log_type == LogType.Cache:
