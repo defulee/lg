@@ -216,8 +216,26 @@ class Log:
         }
 
     def to_tr(self):
+        op_str = f"""
+                                <button type="button" class="btn btn-primary btn-sm" data-toggle="modal" data-target="#content-modal">原日志</button>"""
+        if self.request is not None and self.request != "":
+            op_str = op_str + f"""
+                                <button type="button" class="btn btn-info btn-sm" data-toggle="modal" data-target="#json-modal">请求</button>"""
+        if self.response is not None and self.response != "" and self.type in [LogType.LogicFlow, LogType.LogicFunction, LogType.ExtensionPoint]:
+            op_str = op_str + f"""
+                                <button type="button" class="btn btn-info btn-sm" data-toggle="modal" data-target="#json-modal">响应</button>"""
+        elif self.response is not None and self.response != "":
+            op_str = op_str + f"""
+                                <button type="button" class="btn btn-info btn-sm" data-toggle="modal" data-target="#json-modal">Json内容</button>"""
+
+        color = "text-dark"
+        if self.type in [LogType.Error, LogType.Unknown]:
+            color = "text-danger"
+        elif self.type == LogType.Warn:
+            color = "text-warning"
+
         return f"""
-                        <tr data-tt-id="{self.id}" data-tt-parent-id="{self.pid}">
+                        <tr data-tt-id="{self.id}" data-tt-parent-id="{self.pid}" class="{color}">
                             <td>{self.keyword}</td>
                             <td>{self.cost}</td>
                             <td>{self.start_time}</td>
@@ -229,5 +247,6 @@ class Log:
                             <td style="display:none">{self.type.desc()}</td>
                             <td style="display:none">{self.trace_id}</td>
                             <td style="display:none">{self.span_id}</td>
+                            <td>{op_str}</td>
                         </tr>
         """
