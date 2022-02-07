@@ -7,7 +7,19 @@ import os
 import sys
 
 import pymysql
-import yaml
+try:
+    import pymysql
+except Exception as e:
+    cmd = "pip install PyMySQL"
+    os.system(cmd)
+    import pymysql
+
+try:
+    import yaml
+except Exception as e:
+    cmd = "pip install PyYAML"
+    os.system(cmd)
+    import yaml
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(__file__)))))
 

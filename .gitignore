@@ -8,3 +8,4 @@ custom/book/tools/arthas
 .idea
 *.iml
 custom/log/tools/index*.html
+.vscode
