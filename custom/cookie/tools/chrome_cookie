@@ -1,0 +1,58 @@
+#!/usr/bin/env python3
+# -*- coding:utf-8 -*-
+### fetch chrome cookie
+
+import argparse
+import json
+import os
+
+try:
+    import browser_cookie3
+except Exception as e:
+    cmd = "pip install browser_cookie3"
+    os.system(cmd)
+    import browser_cookie3
+
+
+def get_args():
+    parser = argparse.ArgumentParser()
+    parser.description = '参数解析'
+    parser.add_argument('-d', '--domain', required=True, help='domain name')
+    args = parser.parse_args()
+    return args.domain
+
+
+def fetch_domain_cookies(domain):
+    cj = browser_cookie3.chrome(domain_name=domain)
+    # cj = browser_cookie3.chrome(domain_name="aliyun.com")
+    domain_cookies = []
+    for domain, path_cookies in cj.__getattribute__("_cookies").items():
+        p_cookies = []
+        for path, cookies in path_cookies.items():
+            p_cookie = {
+                "path": path
+            }
+            cookie_list = []
+            for name, cookie in cookies.items():
+                ck = {
+                    "name": name,
+                    "domain": domain,
+                    "expires": cookie.expires,
+                    "path": path,
+                    "secure": cookie.secure,
+                    "value": cookie.value
+                }
+                cookie_list.append(ck)
+            p_cookie["cookies"] = cookie_list
+            p_cookies.append(p_cookie)
+        domain_cookies.append({
+            "domain": domain,
+            "path_cookies": p_cookies
+        })
+        return domain_cookies
+
+
+if __name__ == '__main__':
+    domain = get_args()
+    domain_cookies = fetch_domain_cookies(domain)
+    print(json.dumps(domain_cookies))
