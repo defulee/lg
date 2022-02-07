@@ -7,6 +7,7 @@ from enum import Enum
 
 class LogType(Enum):
     """日志类型"""
+    Trigger = "Trigger"
     LogicFlow = "LogicFlow"
     LogicFunction = "LogicFunction"
     ExtensionPoint = "ExtensionPoint"
@@ -20,7 +21,9 @@ class LogType(Enum):
     Unknown = "Unknown"
 
     def desc(self):
-        if self == LogType.LogicFlow:
+        if self == LogType.Trigger:
+            return "Trigger"
+        elif self == LogType.LogicFlow:
             return "Flow"
         elif self == LogType.LogicFunction:
             return "Function"
@@ -91,9 +94,13 @@ def parse_log_content(log):
 
 
 def parse_log_type(log):
-    if "Start execute [LogicFlow] impl" in log:
+    if "starting trigger: " in log:
+        return LogType.Trigger, LogStatus.Start
+    elif "finished trigger: " in log:
+        return LogType.Trigger, LogStatus.End
+    elif "Start execute [LogicFlow] impl" in log:
         return LogType.LogicFlow, LogStatus.Start
-    if "End execute [LogicFlow] impl" in log:
+    elif "End execute [LogicFlow] impl" in log:
         return LogType.LogicFlow, LogStatus.End
     elif "Start execute [LogicFunction] impl" in log:
         return LogType.LogicFunction, LogStatus.Start
@@ -144,7 +151,10 @@ class Log:
         Log.next_id = Log.next_id + 1
 
     def parse_log_keyword(self, log_type, log):
-        if log_type in self.keyword_types:
+        if log_type == LogType.Trigger:
+            trigger = str.split(str.split(log, " trigger: ")[1], " ")[0].replace("`", "")
+            return "[Trigger] " + trigger
+        elif log_type in self.keyword_types:
             pattern = r'(\[|\]|,)'
             return '[' + log_type.desc() + '] ' + re.sub(pattern, "", str.split(log, " ")[17])
         elif log_type == LogType.Cache:
@@ -169,16 +179,14 @@ class Log:
             # 2022-01-20 14:48:20.820 INFO  [oms-runtime,898a94ba56dcd378dc4e28b79dbf1696,51d72b30-f330-4e28-928b-bc28621d3bde] - [http-nio-8080-exec-9] API_DS                                  : executeDSLByES, cost=41ms, dsl={"boolQueryBuilderSearch":{"boolQuery":{"must":[{"termQuery":{"field":"status","value":"TO_AUDIT"}},{"termQuery":{"field":"channelOrderCode","value":"SO22012000000003"}}]}},"index":"furniture_trade_TradeOrderLineSO","isCount":true,"searchSortOrderByList":[{"field":"groupOrderId","order":"DESC"},{"field":"tradeOrderCode","order":"DESC"}]}, reqId=
             model = str.split(str.split(log, ",\"index\":\"")[1], "\",")[0]
             return "[ES] index: " + model
-        elif log_type in [LogType.Warn, LogType.Error]:
-            return str(log_type)
-        elif log_type == LogType.CostTime:
-            pattern = r'(\[|\]|,)'
-            return re.sub(pattern, "", str.split(log, " ")[18])
-        elif log_type == LogType.Custom:
+        elif log_type in [LogType.Warn, LogType.Error, LogType.Custom]:
             # 2022-01-20 14:47:48.961 INFO  [oms-runtime,b3097e90c4878ff10b4741ff22c88acb,5afa9c5a-efdf-4608-88a9-613910f1c45a] - [http-nio-8080-exec-9] i.t.furniture.trade.utils.TimeWatch     : [TimeWatch-Step]: 查询组合订单; 合并订单:HB2022012000002200
             keyword = str.split(log, ": ", 1)[1]
             match = re.findall(r"\{.*(?=\})\}", keyword)
-            return keyword[0:keyword.index(match[0])] if match else keyword
+            return '[' + log_type.desc() + '] ' + keyword[0:keyword.index(match[0])] if match else keyword
+        elif log_type == LogType.CostTime:
+            pattern = r'(\[|\]|,)'
+            return re.sub(pattern, "", str.split(log, " ")[18])
         else:
             return ""
 
@@ -187,9 +195,9 @@ class Log:
             return str.split(log, "], args: ")[1].replace("\n", "")
         elif log_type == LogType.ES:
             return str.split(str.split(log, ", dsl=")[1], ", reqId=")[0]
-        elif log_type == LogType.Custom:
+        elif log_type in [LogType.Warn, LogType.Error, LogType.Custom]:
             match = re.findall(r"\{.*(?=\})\}", log)
-            return match[0] if match else log
+            return match[0] if match else ""
         else:
             return ""
 
@@ -218,8 +226,26 @@ class Log:
         }
 
     def to_tr(self):
+        op_str = f"""
+                                <button type="button" class="btn btn-primary btn-sm" data-toggle="modal" data-target="#content-modal">原日志</button>"""
+        if self.request is not None and self.request != "":
+            op_str = op_str + f"""
+                                <button type="button" class="btn btn-info btn-sm" data-toggle="modal" data-target="#json-modal">请求</button>"""
+        if self.response is not None and self.response != "" and self.type in [LogType.LogicFlow, LogType.LogicFunction, LogType.ExtensionPoint]:
+            op_str = op_str + f"""
+                                <button type="button" class="btn btn-info btn-sm" data-toggle="modal" data-target="#json-modal">响应</button>"""
+        elif self.response is not None and self.response != "":
+            op_str = op_str + f"""
+                                <button type="button" class="btn btn-info btn-sm" data-toggle="modal" data-target="#json-modal">Json内容</button>"""
+
+        color = "text-dark"
+        if self.type in [LogType.Error, LogType.Unknown]:
+            color = "text-danger"
+        elif self.type == LogType.Warn:
+            color = "text-warning"
+
         return f"""
-                        <tr data-tt-id="{self.id}" data-tt-parent-id="{self.pid}">
+                        <tr data-tt-id="{self.id}" data-tt-parent-id="{self.pid}" class="{color}">
                             <td>{self.keyword}</td>
                             <td>{self.cost}</td>
                             <td>{self.start_time}</td>
@@ -231,5 +257,6 @@ class Log:
                             <td style="display:none">{self.type.desc()}</td>
                             <td style="display:none">{self.trace_id}</td>
                             <td style="display:none">{self.span_id}</td>
+                            <td>{op_str}</td>
                         </tr>
         """

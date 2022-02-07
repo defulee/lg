@@ -9,3 +9,5 @@ custom/book/tools/arthas
 *.iml
 custom/log/tools/index*.html
 .vscode
+
+*.xml
