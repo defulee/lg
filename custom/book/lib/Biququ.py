@@ -65,6 +65,9 @@ def search(keyword):
 def get_chapters(url):
     contents = []
     soup = get_soup(url)
+    div_list = soup.find_all("div", id="list")
+    if div_list is None or len(div_list) == 0:
+        return contents
     div_tag = soup.find_all("div", id="list")[0]
     a_tags = div_tag.find_all("a")
     for a_tag in a_tags:
@@ -86,7 +89,10 @@ def get_chapters(url):
 def get_chapter_content(url):
     paragraphs = []
     soup = get_soup(url)
-    content_tag = soup.find_all("div", id="content")[0]
+    content = soup.find_all("div", id="content")
+    if len(content) < 1:
+        return paragraphs
+    content_tag = content[0]
     for p in content_tag.find_all('p'):
         paragraph = p.get_text()
         paragraphs.append(paragraph + "\n")

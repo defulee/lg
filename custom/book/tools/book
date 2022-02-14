@@ -50,21 +50,24 @@ if __name__ == '__main__':
 
     # 4. 根据小说链接解析目录
     chapters = get_chapters(book_info["小说链接"])
-    bt = PrettyTable(["列1", "列2", "列3"])
-    for idx in range(len(chapters) - 3):
-        bt.add_row([chapters[idx]["章节名"], chapters[idx + 1]["章节名"], chapters[idx + 2]["章节名"]])
-        idx += 3
-    bt.align["列1"] = 'l'
-    bt.align["列2"] = 'l'
-    bt.align["列3"] = 'l'
-    bt.header = False
-    print(bt)
+    if len(chapters) == 0:
+        print("无章节信息")
+    else:
+        bt = PrettyTable(["列1", "列2", "列3"])
+        for idx in range(len(chapters) - 3):
+            bt.add_row([chapters[idx]["章节名"], chapters[idx + 1]["章节名"], chapters[idx + 2]["章节名"]])
+            idx += 3
+        bt.align["列1"] = 'l'
+        bt.align["列2"] = 'l'
+        bt.align["列3"] = 'l'
+        bt.header = False
+        print(bt)
 
-    # 5. 遍历小说目录链接，解析正文，返回正文段落列表
-    fo = open(os.getcwd() + "/" + keyword + ".txt", "w")
-    for idx, chapter in enumerate(chapters):
-        print("下载章节:", chapter['章节名'], "[" + str(idx) + "/" + str(len(chapters)) + "]")
-        context = get_chapter_content(chapter["章节链接"])
-        fo.write(chapter['章节名'] + "\n")
-        fo.write("".join(context) + "\n\n")
-    print("执行完成，文件路径：" + os.getcwd() + "/" + keyword + ".txt")
+        # 5. 遍历小说目录链接，解析正文，返回正文段落列表
+        fo = open(os.getcwd() + "/" + keyword + ".txt", "w")
+        for idx, chapter in enumerate(chapters):
+            print("下载章节:", chapter['章节名'], "[" + str(idx) + "/" + str(len(chapters)) + "]")
+            context = get_chapter_content(chapter["章节链接"])
+            fo.write(chapter['章节名'] + "\n")
+            fo.write("".join(context) + "\n\n")
+        print("执行完成，文件路径：" + os.getcwd() + "/" + keyword + ".txt")
