@@ -1,4 +1,4 @@
-#!/usr/local/bin/python3.7
+#!/usr/bin/env python3
 # -*- coding: UTF-8 -*-
 ### 查询下载小说
 
@@ -10,7 +10,8 @@ from prettytable import PrettyTable
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(__file__)))))
 
-from custom.book.lib.Biququ import search, get_chapters, get_chapter_content
+# from custom.book.lib.Biququ import search, get_chapters, get_chapter_content
+from custom.book.lib.vipkanshu import search, get_chapters, get_chapter_content
 
 # 1. 读取
 keyword = ''

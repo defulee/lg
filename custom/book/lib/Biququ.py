@@ -1,4 +1,4 @@
-#!/usr/local/bin/python3.7
+#!/usr/bin/env python3
 # -*- coding: UTF-8 -*-
 
 from bs4 import BeautifulSoup
@@ -41,23 +41,17 @@ def search(keyword):
     records = json.loads(ret.text)
 
     for record in records:
-        book = {
-            "书名": "",
-            "封面URL": "",
-            "简介": "",
-            "作者": "",
-            "小说链接": "",
-        }
+        book = {"书名": record['articlename'],
+                "封面URL": '',
+                "简介": record['intro'],
+                "作者": record['author'],
+                "小说链接": record['index']
+                }
         # 2. 筛选书名
-        book["书名"] = record['articlename']
         # 3. 筛选封面URL
-        book["封面URL"] = ''
         # 4. 筛选简介
-        book["简介"] = record['intro']
         # 5. 筛选作者
-        book["作者"] = record['author']
         # 5. 筛选小说链接
-        book["小说链接"] = record['index']
         res.append(book)
     return res
 
